@@ -29,6 +29,7 @@
 (defconst rails-snippets-feature:list
   '((0 "ruby")
     (1 "loops" ruby-mode-abbrev-table
+       ("end" "$>$.\nend$>" "end") ;; to avoid expanding when i want to indent
        ("while" "while $${condition}\n$>$.\nend$>" "while ... end")
        ("when" "when $${condition}\n$>$." "when ...")
        ("w" "attr_writer :$${attr_names}" "attr_writer ...")
