@@ -220,7 +220,7 @@ Emacs w3m browser."
           (kill-region (point-min) (point-max))
           (message (concat "Please wait..."))
           (call-process rails-ri-command nil "*ri*" t item)
-          (local-set-key [return] 'rails-search-doc)
+;          (local-set-key [return] 'rails-search-doc) ; because this kicks in in text files. why? -mike
           (ansi-color-apply-on-region (point-min) (point-max))
           (setq buffer-read-only t)
           (goto-char (point-min))))))
