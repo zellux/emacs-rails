@@ -171,6 +171,8 @@ Emacs w3m browser."
     (:model            "app/models/" (lambda (file) (and (not (rails-core:mailer-p file))
                                                          (not (rails-core:observer-p file)))))
     (:helper           "app/helpers/")
+    (:unit-test        "vendor/plugins/.*/test/") ; needs to appear before more-general :plugin
+    (:model            "vendor/plugins/.*/lib/") ; needs to appear before more-general :plugin
     (:plugin           "vendor/plugins/")
     (:unit-test        "test/unit/")
     (:functional-test  "test/functional/")
