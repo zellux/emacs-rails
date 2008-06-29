@@ -172,6 +172,8 @@ Emacs w3m browser."
     (:model            "app/models/" (lambda (file) (and (not (rails-core:mailer-p file))
                                                          (not (rails-core:observer-p file)))))
     (:helper           "app/helpers/")
+    (:unit-test        "vendor/plugins/.*/test/") ; needs to appear before more-general :plugin
+    (:model            "vendor/plugins/.*/lib/") ; needs to appear before more-general :plugin
     (:plugin           "vendor/plugins/")
     (:unit-test        "test/unit/")
     (:functional-test  "test/functional/")
@@ -219,7 +221,7 @@ Emacs w3m browser."
           (kill-region (point-min) (point-max))
           (message (concat "Please wait..."))
           (call-process rails-ri-command nil "*ri*" t item)
-          (local-set-key [return] 'rails-search-doc)
+;          (local-set-key [return] 'rails-search-doc) ; because this kicks in in text files. why? -mike
           (ansi-color-apply-on-region (point-min) (point-max))
           (setq buffer-read-only t)
           (goto-char (point-min))))))
