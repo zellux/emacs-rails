@@ -240,7 +240,7 @@
        ("hm" "has_many :$${objects}" "has_many")
        ("hmt" "has_many :$${objects}, :through => :$${,rails-snippets-feature:prev-has-many-table-name}" "has_many :through")
        ("ho" "has_one :$${object}" "has_one")
-       ("habtm" "has_and_belongs_to_many :$${object}" "has_and_belongs_to_many")) ; model
+       ("habtm" "has_and_belongs_to_many :$${object}, :join_table => '$${table_name}', :foreign_key => '$${foreign_key}'" "has_and_belongs_to_many")) ; model
     (0 "migrations" rails-migration-minor-mode-abbrev-table
        ("tcls" "t.column :$${title}, :$${string}\n$>tcls$." "create several columns")
        ("tcl" "t.column :$${title}, :$${string}$." "create column")
