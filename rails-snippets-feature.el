@@ -229,6 +229,8 @@
        ("rdl" "RAILS_DEFAULT_LOGGER.debug '$${message}'$." "RAILS_DEFAULT_LOGGER.debug")
        ("nr" "@$${item}.new_record?" "item.new_record?")) ; rails
     (0 "model" rails-model-minor-mode-abbrev-table
+       ("ns" "named_scope :$${name}, :conditions => {:$${attribute} => $${value}}" "named_scope")
+       ("nsl" "named_scope :$${name},  lambda {|$${param}| { :conditions => ['$${attribute} > ?', $${param}]} }" "named_scope_lamba")
        ("va" "validates_associated :$${attribute}" "validates_associated")
        ("vc" "validates_confirmation_of :$${attribute}" "validates_confirmation_of")
        ("ve" "validates_exclusion_of :$${attribute}" "validates_exclusion_of")
