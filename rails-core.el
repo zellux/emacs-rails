@@ -605,11 +605,24 @@ the Rails minor mode log."
   (defun rails-core:menu-position ()
     (list '(300 50) (get-buffer-window (current-buffer)))))
 
+;; fixup emacs-rails menu specs to work with tmm-prompt
+(defun rails-core:tmm-menu (menu)
+  (symbol-name (tmm-prompt (cons (car menu)
+				 (mapcar (lambda (pane)
+					   (cons (car pane)
+						 (mapcar (lambda (item)
+							   (if (symbolp (cdr item))
+							       item
+							     (cons (car item)
+								   (intern (cdr item)))))
+							 (cdr pane))))
+					 (cdr menu))))))
+
 (defun rails-core:menu (menu)
   "Show a menu."
   (let ((result
          (if (rails-use-text-menu)
-             (tmm-prompt menu)
+             (rails-core:tmm-menu menu)
            (x-popup-menu (rails-core:menu-position)
                          (rails-core:prepare-menu  menu)))))
     (if (listp result)
