@@ -112,6 +112,11 @@ Emacs w3m browser."
   :group 'rails
   :type 'boolean)
 
+(defcustom rails-text-menu-function nil
+  "Which function to use to create text menus. nil means #'rails-core:ttm-menu"
+  :group 'rails
+  :type 'string)
+
 (defcustom rails-ask-when-reload-tags nil
   "Indicates whether the user should confirm reload a TAGS table or not."
   :group 'rails

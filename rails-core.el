@@ -622,7 +622,8 @@ the Rails minor mode log."
   "Show a menu."
   (let ((result
          (if (rails-use-text-menu)
-             (rails-core:tmm-menu menu)
+             (funcall (or rails-text-menu-function
+			  #'rails-core:tmm-menu) menu)
            (x-popup-menu (rails-core:menu-position)
                          (rails-core:prepare-menu  menu)))))
     (if (listp result)
