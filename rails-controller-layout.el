@@ -100,7 +100,7 @@ If the action is nil, return all views for the controller."
   (let (menu)
     (setq menu
           (mapcar (lambda(i)
-                    (list (concat (if (string-match "^_" (file-name-nondirectory i)) "Partial" "View")
+                    (cons (concat (if (string-match "^_" (file-name-nondirectory i)) "Partial" "View")
                                   ": "
                                   (file-name-nondirectory i))
                           i))
