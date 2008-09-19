@@ -79,6 +79,9 @@ otherwise if set REVERSE convert from remote to local."
                                                    command
                                                    command-args))
        (setq command rails-cmd-proxy:remote-cmd))
+     (save-excursion
+       (set-buffer (get-buffer-create buffer))
+       (rails-minor-mode t))
      (start-process-shell-command name
                                   buffer
                                   command
