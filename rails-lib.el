@@ -392,7 +392,7 @@ as the value of the symbol, and the hook as the function definition."
 ;;       (setq mmm-indent-sandbox-finish-position nil)
 ;;       (save-excursion
 ;;         (set-buffer fragment-name)
-;;         (beginning-of-buffer)
+;;         (goto-char (point-min))
 ;;         (insert content)
 ;;         (goto-char fragment-pos)
 ;;         (funcall indent-func t)

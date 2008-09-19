@@ -124,7 +124,7 @@
 As the buffer is read-only this is merely a change in appearance"
   (rails-project:with-root (root)
     (save-excursion
-      (beginning-of-buffer)
+      (goto-char (point-min))
       (let ((file-regex (concat (regexp-quote root) "[^:]+")))
         (while (re-search-forward file-regex nil t)
           (let* ((orig-filename (match-string 0))
