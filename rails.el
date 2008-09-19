@@ -168,6 +168,11 @@ Emacs w3m browser."
 (defvar rails-secondary-switch-func nil)
 (defvar rails-required-lisp-eval-depth 1000) ; Specifies the minimum required value of max-lisp-eval-depth for rails mode to work
 
+(defcustom rails-indent-and-complete t
+  "Key to indent and complete."
+  :group 'rails
+  :type 'boolean)
+
 (defvar rails-directory<-->types
   '((:controller       "app/controllers/")
     (:layout           "app/layouts/")
@@ -418,9 +423,10 @@ necessary."
             (modify-syntax-entry ?: "w" (syntax-table))
             (modify-syntax-entry ?_ "w" (syntax-table))
             (local-set-key (kbd "C-.") 'complete-tag)
-            (local-set-key (if rails-use-another-define-key
-                               (kbd "TAB") (kbd "<tab>"))
-                           'indent-and-complete)
+	    (if rails-indent-and-complete
+		(local-set-key (if rails-use-another-define-key
+				   (kbd "TAB") (kbd "<tab>"))
+			       'indent-and-complete))
             (local-set-key (rails-key "f") '(lambda()
                                               (interactive)
                                               (mouse-major-mode-menu (rails-core:menu-position))))
@@ -438,9 +444,10 @@ necessary."
             (rails-project:with-root
              (root)
              (progn
-               (local-set-key (if rails-use-another-define-key
-                                  (kbd "TAB") (kbd "<tab>"))
-                              'indent-and-complete)
+	       (if rails-indent-and-complete
+		   (local-set-key (if rails-use-another-define-key
+				      (kbd "TAB") (kbd "<tab>"))
+				  'indent-and-complete))
                (rails-minor-mode t)
                (rails-apply-for-buffer-type)))))
 
