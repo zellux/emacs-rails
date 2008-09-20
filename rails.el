@@ -201,6 +201,21 @@ Emacs w3m browser."
 (defvar rails-tags-dirs '("app" "lib" "test" "db")
   "List of directories from RAILS_ROOT where ctags works.")
 
+(defvar rails-error-regexp-alist
+  '(
+    (" /?\\(app/[a-z0-9._/]*\\):\\([0-9]+\\)" 1 2)
+    (" /?\\(lib/[a-z0-9._/]*\\):\\([0-9]+\\)" 1 2)
+    (" /?\\(test/[a-z0-9._/]*\\):\\([0-9]+\\)" 1 2)
+    (" /?\\(db/[a-z0-9._/]*\\):\\([0-9]+\\)" 1 2)
+    (" /?\\(vendor/[a-z0-9._/]*\\):\\([0-9]+\\)" 1 2)
+    (" /?\\(app/[a-z0-9._/]*\\)" 1)
+    (" /?\\(lib/[a-z0-9._/]*\\)" 1)
+    (" /?\\(test/[a-z0-9._/]*\\)" 1)
+    (" /?\\(db/[a-z0-9._/]*\\)" 1)
+    (" /?\\(vendor/[a-z0-9._/]*\\)" 1)
+    )
+  "Rails specific compilation-error-regexp-alist.")
+
 (defun rails-use-text-menu ()
   "If t use text menu, popup menu otherwise"
   (or (null window-system) rails-always-use-text-menus))
