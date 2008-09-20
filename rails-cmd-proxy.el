@@ -120,4 +120,19 @@ otherwise if set REVERSE convert from remote to local."
                                 (string-repeat " " (- (length (match-string 1)) 1)))
                         nil t nil 1))))))
 
+(defun rails-cmd-proxy:compilation-shell-minor-mode (buffer)
+  (interactive "b")
+  (set-buffer (get-buffer buffer))
+  (set (make-local-variable 'comint-scroll-to-bottom-on-output) t)
+  (set (make-local-variable 'compilation-error-regexp-alist)
+       '(
+	 (" /?\\(app/[a-z0-9._/]*\\):\\([0-9]+\\)" 1 2)
+	 (" /?\\(lib/[a-z0-9._/]*\\):\\([0-9]+\\)" 1 2)
+	 (" /?\\(vendor/[a-z0-9._/]*\\):\\([0-9]+\\)" 1 2)
+	 (" /?\\(app/[a-z0-9._/]*\\)" 1)
+	 (" /?\\(lib/[a-z0-9._/]*\\)" 1)
+	 (" /?\\(vendor/[a-z0-9._/]*\\)" 1)
+	 ))
+  (compilation-shell-minor-mode))
+
 (provide 'rails-cmd-proxy)
