@@ -99,11 +99,7 @@ If the action is nil, return all views for the controller."
   "Make menu of view for CONTROLLER-NAME."
   (let (menu)
     (setq menu
-          (mapcar (lambda(i)
-                    (cons (concat (if (string-match "^_" (file-name-nondirectory i)) "Partial" "View")
-                                  ": "
-                                  (file-name-nondirectory i))
-                          i))
+          (mapcar (lambda(i) (cons (file-name-nondirectory i) i))
                   (rails-controller-layout:view-files controller-name nil)))
     (when (zerop (length menu))
       (setq menu (list)))
