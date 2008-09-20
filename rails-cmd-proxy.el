@@ -81,6 +81,10 @@ otherwise if set REVERSE convert from remote to local."
        (setq command rails-cmd-proxy:remote-cmd))
      (save-excursion
        (set-buffer (get-buffer-create buffer))
+       (set (make-local-variable 'comint-scroll-to-bottom-on-output) t)
+       (set (make-local-variable 'compilation-error-regexp-alist)
+	    rails-error-regexp-alist)
+       (compilation-shell-minor-mode t)
        (rails-minor-mode t))
      (start-process-shell-command name
                                   buffer
@@ -119,20 +123,5 @@ otherwise if set REVERSE convert from remote to local."
          (replace-match (format "%s "
                                 (string-repeat " " (- (length (match-string 1)) 1)))
                         nil t nil 1))))))
-
-(defun rails-cmd-proxy:compilation-shell-minor-mode (buffer)
-  (interactive "b")
-  (set-buffer (get-buffer buffer))
-  (set (make-local-variable 'comint-scroll-to-bottom-on-output) t)
-  (set (make-local-variable 'compilation-error-regexp-alist)
-       '(
-	 (" /?\\(app/[a-z0-9._/]*\\):\\([0-9]+\\)" 1 2)
-	 (" /?\\(lib/[a-z0-9._/]*\\):\\([0-9]+\\)" 1 2)
-	 (" /?\\(vendor/[a-z0-9._/]*\\):\\([0-9]+\\)" 1 2)
-	 (" /?\\(app/[a-z0-9._/]*\\)" 1)
-	 (" /?\\(lib/[a-z0-9._/]*\\)" 1)
-	 (" /?\\(vendor/[a-z0-9._/]*\\)" 1)
-	 ))
-  (compilation-shell-minor-mode))
 
 (provide 'rails-cmd-proxy)
