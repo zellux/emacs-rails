@@ -112,6 +112,11 @@ Emacs w3m browser."
   :group 'rails
   :type 'boolean)
 
+(defcustom rails-text-menu-function nil
+  "Which function to use to create text menus. nil means #'rails-core:ttm-menu"
+  :group 'rails
+  :type 'string)
+
 (defcustom rails-ask-when-reload-tags nil
   "Indicates whether the user should confirm reload a TAGS table or not."
   :group 'rails
@@ -163,6 +168,11 @@ Emacs w3m browser."
 (defvar rails-secondary-switch-func nil)
 (defvar rails-required-lisp-eval-depth 1000) ; Specifies the minimum required value of max-lisp-eval-depth for rails mode to work
 
+(defcustom rails-indent-and-complete t
+  "Key to indent and complete."
+  :group 'rails
+  :type 'boolean)
+
 (defvar rails-directory<-->types
   '((:controller       "app/controllers/")
     (:layout           "app/layouts/")
@@ -190,6 +200,21 @@ Emacs w3m browser."
 
 (defvar rails-tags-dirs '("app" "lib" "test" "db")
   "List of directories from RAILS_ROOT where ctags works.")
+
+(defvar rails-error-regexp-alist
+  '(
+    (" /?\\(app/[a-z0-9._/]*\\):\\([0-9]+\\)" 1 2)
+    (" /?\\(lib/[a-z0-9._/]*\\):\\([0-9]+\\)" 1 2)
+    (" /?\\(test/[a-z0-9._/]*\\):\\([0-9]+\\)" 1 2)
+    (" /?\\(db/[a-z0-9._/]*\\):\\([0-9]+\\)" 1 2)
+    (" /?\\(vendor/[a-z0-9._/]*\\):\\([0-9]+\\)" 1 2)
+    (" /?\\(app/[a-z0-9._/]*\\)" 1)
+    (" /?\\(lib/[a-z0-9._/]*\\)" 1)
+    (" /?\\(test/[a-z0-9._/]*\\)" 1)
+    (" /?\\(db/[a-z0-9._/]*\\)" 1)
+    (" /?\\(vendor/[a-z0-9._/]*\\)" 1)
+    )
+  "Rails specific compilation-error-regexp-alist.")
 
 (defun rails-use-text-menu ()
   "If t use text menu, popup menu otherwise"
@@ -413,9 +438,10 @@ necessary."
             (modify-syntax-entry ?: "w" (syntax-table))
             (modify-syntax-entry ?_ "w" (syntax-table))
             (local-set-key (kbd "C-.") 'complete-tag)
-            (local-set-key (if rails-use-another-define-key
-                               (kbd "TAB") (kbd "<tab>"))
-                           'indent-and-complete)
+	    (if rails-indent-and-complete
+		(local-set-key (if rails-use-another-define-key
+				   (kbd "TAB") (kbd "<tab>"))
+			       'indent-and-complete))
             (local-set-key (rails-key "f") '(lambda()
                                               (interactive)
                                               (mouse-major-mode-menu (rails-core:menu-position))))
@@ -433,9 +459,10 @@ necessary."
             (rails-project:with-root
              (root)
              (progn
-               (local-set-key (if rails-use-another-define-key
-                                  (kbd "TAB") (kbd "<tab>"))
-                              'indent-and-complete)
+	       (if rails-indent-and-complete
+		   (local-set-key (if rails-use-another-define-key
+				      (kbd "TAB") (kbd "<tab>"))
+				  'indent-and-complete))
                (rails-minor-mode t)
                (rails-apply-for-buffer-type)))))
 
