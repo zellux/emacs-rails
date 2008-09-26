@@ -87,6 +87,9 @@ using `rails-default-environment'."
      (if proc
          (message "Only one instance rails-ws allowed")
        (progn
+         (save-excursion
+           (set-buffer (get-buffer-create rails-ws:buffer-name))
+           (delete-region (point-min) (point-max)))
 	 (run-hooks 'rails-ws:before-start-hook)
 	 (let* ((default-directory root)
 		(env (if env env rails-default-environment))
