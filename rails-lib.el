@@ -208,7 +208,7 @@ ABBREV-TABLE."
 not exist."
   `(progn
      (unless (boundp ',key-map)
-       (setf ,key-map (make-keymap)))
+       (setf ,key-map (make-sparse-keymap)))
      ,@(mapcar
   #'(lambda (key-func)
       `(define-key ,key-map ,(first key-func) ,(second key-func)))

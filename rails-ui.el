@@ -207,8 +207,7 @@
 (defconst rails-minor-mode-test-current-method-key (rails-key "\C-c ,"))
 
 (defvar rails-minor-mode-map
-  (let ((map (make-keymap)))
-    map))
+  (make-sparse-keymap))
 
 (define-keys rails-minor-mode-map
   ([menu-bar] rails-minor-mode-menu-bar-map)
