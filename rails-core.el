@@ -28,7 +28,7 @@
 (eval-when-compile
   (require 'rails-lib))
 
-(defvar rails-core:class-dirs
+(defcustom rails-core:class-dirs
   '("app/controllers"
     "app/views"
     "app/models"
@@ -36,7 +36,9 @@
     "test/unit"
     "test/functional"
     "test/fixtures")
-  "Directories with Rails classes")
+  "Directories with Rails classes"
+  :group 'rails
+  :type '(repeat string))
 
 (defun rails-core:class-by-file (filename)
   "Return the class associated with FILENAME.

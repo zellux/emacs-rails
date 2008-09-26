@@ -51,6 +51,16 @@
 (require 'rails-compat)
 (require 'rails-project)
 
+
+;;;;;;;;; Defining custom group before loading other file
+
+(defgroup rails nil
+  "Edit Rails projet with Emacs."
+  :group 'programming
+  :prefix "rails-")
+
+;;;;;;;;; Loading most of the mode
+
 (require 'rails-core)
 (require 'rails-ruby)
 (require 'rails-lib)
@@ -72,11 +82,6 @@
 
 
 ;;;;;;;;;; Variable definition ;;;;;;;;;;
-
-(defgroup rails nil
-  "Edit Rails projet with Emacs."
-  :group 'programming
-  :prefix "rails-")
 
 (defcustom rails-api-root nil
   "*Root of Rails API html documentation. Must be a local directory."
@@ -189,8 +194,15 @@ Emacs w3m browser."
     (:migration        "db/migrate"))
   "Rails file types -- rails directories map")
 
-(defvar rails-environments '("development" "production" "test"))
-(defvar rails-default-environment (first rails-environments))
+(defcustom rails-environments '("development" "production" "test")
+  "rails environments"
+  :group 'rails
+  :type '(repeat string))
+
+(defcustom rails-default-environment (first rails-environments)
+  "rails environment used by default"
+  :group 'rails
+  :type 'string)
 
 (defvar rails-adapters-alist
   '(("mysql"      . sql-mysql)
@@ -198,8 +210,10 @@ Emacs w3m browser."
     ("sqlite3"    . sql-sqlite))
   "Sets emacs sql function for rails adapter names.")
 
-(defvar rails-tags-dirs '("app" "lib" "test" "db")
-  "List of directories from RAILS_ROOT where ctags works.")
+(defcustom rails-tags-dirs '("app" "lib" "test" "db")
+  "List of directories from RAILS_ROOT where ctags works."
+  :group 'rails
+  :type '(repeat string))
 
 (defvar rails-error-regexp-alist
   '(
