@@ -189,8 +189,8 @@ Emacs w3m browser."
     (:migration        "db/migrate"))
   "Rails file types -- rails directories map")
 
-(defvar rails-enviroments '("development" "production" "test"))
-(defvar rails-default-environment (first rails-enviroments))
+(defvar rails-environments '("development" "production" "test"))
+(defvar rails-default-environment (first rails-environments))
 
 (defvar rails-adapters-alist
   '(("mysql"      . sql-mysql)
@@ -304,7 +304,7 @@ Emacs w3m browser."
 
 (defun rails-read-enviroment-name (&optional default)
   "Read Rails enviroment with auto-completion."
-  (completing-read "Environment name: " (list->alist rails-enviroments) nil nil default))
+  (completing-read "Environment name: " (list->alist rails-environments) nil nil default))
 
 (defun* rails-run-sql (&optional env)
   "Run a SQL process for the current Rails project."
