@@ -316,9 +316,13 @@ BUFFER-MAJOR-MODE and process-sentinel SENTINEL."
 (defun rails-script:console ()
   "Run script/console."
   (interactive)
-  (rails-script:run-interactive (format "console at (%s)" rails-default-environment)
-                                "script/console"
-                                 rails-default-environment))
+  (let* ((name (format "console at (%s)" rails-default-environment))
+	 (buffer (get-buffer (format "*rails-%s-%s*" (rails-project:name) name))))
+    (if buffer
+	(switch-to-buffer-other-window buffer)
+	(rails-script:run-interactive name
+				      "script/console"
+				      rails-default-environment))))
 
 (defun rails-script:breakpointer ()
   "Run script/breakpointer."

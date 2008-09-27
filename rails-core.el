@@ -28,7 +28,7 @@
 (eval-when-compile
   (require 'rails-lib))
 
-(defvar rails-core:class-dirs
+(defcustom rails-core:class-dirs
   '("app/controllers"
     "app/views"
     "app/models"
@@ -36,7 +36,9 @@
     "test/unit"
     "test/functional"
     "test/fixtures")
-  "Directories with Rails classes")
+  "Directories with Rails classes"
+  :group 'rails
+  :type '(repeat string))
 
 (defun rails-core:class-by-file (filename)
   "Return the class associated with FILENAME.
@@ -236,14 +238,14 @@ it does not exist, ask to create it using QUESTION as a prompt."
   "Return the file name of partial NAME."
   (if (string-match "/" name)
       (concat "app/views/"
-        (replace-regexp-in-string "\\([^/]*\\)$" "_\\1.rhtml" name))
+        (replace-regexp-in-string "\\([^/]*\\)$" "_\\1.html.erb" name))
     (concat (rails-core:views-dir (rails-core:current-controller))
-      "_" name ".rhtml")))
+      "_" name ".html.erb")))
 
 (defun rails-core:view-name (name)
   "Return the file name of view NAME."
   (concat (rails-core:views-dir (rails-core:current-controller))
-          name ".rhtml")) ;; BUG: will fix it
+          name ".html.erb")) ;; BUG: will fix it
 
 (defun rails-core:helper-file (controller)
   "Return the helper file name for the controller named
@@ -683,6 +685,6 @@ the Rails minor mode log."
 
 (defun rails-core:rhtml-buffer-p ()
   "Return non nil if the current buffer is rhtml file."
-  (string-match "\\.rhtml$" (buffer-file-name)))
+  (string-match "\\.rhtml\\|\\.html\\.erb$" (buffer-file-name)))
 
 (provide 'rails-core)
