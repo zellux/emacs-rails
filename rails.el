@@ -257,7 +257,7 @@ Emacs w3m browser."
           (setq buffer-read-only nil)
           (kill-region (point-min) (point-max))
           (message (concat "Please wait..."))
-          (call-process rails-ri-command nil "*ri*" t item)
+          (call-process rails-ri-command nil "*ri*" t "-T" "-f" "ansi" item)
           (local-set-key [return] 'rails-search-doc)
           (ansi-color-apply-on-region (point-min) (point-max))
           (setq buffer-read-only t)
