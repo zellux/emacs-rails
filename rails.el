@@ -241,9 +241,22 @@ Emacs w3m browser."
                            (svn-status root)))
 
 ;; helper functions/macros
+
+(defun backward-ruby-object ()
+  (if (looking-back "[-a-zA-Z_#:*]+" (line-beginning-position) t)
+      (goto-char (match-beginning 0))))
+
+(defun forward-ruby-object (n)
+  (if (> 0 n)
+      (when (search-backward-regexp "[^-a-zA-Z_#:*][-a-zA-Z_#:*]+" nil t (- n))
+	(forward-char)
+	(point))
+      (when (search-forward-regexp "[-a-zA-Z_#:*]+" nil t n)
+	(goto-char (match-end 0)))))
+
 (defun rails-search-doc (&optional item)
   (interactive)
-  (setq item (if item item (thing-at-point 'sexp)))
+  (setq item (if item item (thing-at-point 'ruby-object)))
   (unless item
     (setq item (read-string "Search symbol: ")))
   (if item
@@ -257,7 +270,7 @@ Emacs w3m browser."
           (setq buffer-read-only nil)
           (kill-region (point-min) (point-max))
           (message (concat "Please wait..."))
-          (call-process rails-ri-command nil "*ri*" t item)
+          (call-process rails-ri-command nil "*ri*" t "-T" "-f" "ansi" item)
           (local-set-key [return] 'rails-search-doc)
           (ansi-color-apply-on-region (point-min) (point-max))
           (setq buffer-read-only t)
