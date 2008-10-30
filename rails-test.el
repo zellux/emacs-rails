@@ -26,6 +26,13 @@
 
 ;;; Code:
 
+
+(defcustom rails-test:quiet nil
+  "Do not show test progress in minibuffer."
+  :group 'rails
+  :type 'boolean
+  :tag "Rails Quiet Tests")
+
 (defvar rails-test:history nil)
 
 (defconst rails-test:result-regexp
@@ -82,18 +89,19 @@
         (rails-script:popup-buffer)))))
 
 (defun rails-test:print-progress (start end len)
-  (let (content)
-    (save-excursion
-      (goto-char (point-min))
-      (while (re-search-forward "^Started" end t)
-        (line-move 1)
-        (save-match-data
-          (let ((progress (string=~ rails-test:progress-regexp
-                                    (current-line-string) $m)))
-            (when progress
-              (setq content (concat content progress)))))))
-    (when content
-      (message "Progress of %s: %s" rails-script:running-script-name content))))
+  (if (not rails-test:quiet)
+    (let (content)
+      (save-excursion
+        (goto-char (point-min))
+        (while (re-search-forward "^Started" end t)
+          (line-move 1)
+          (save-match-data
+            (let ((progress (string=~ rails-test:progress-regexp
+                                      (current-line-string) $m)))
+              (when progress
+                (setq content (concat content progress)))))))
+      (when content
+        (message "Progress of %s: %s" rails-script:running-script-name content)))))
 
 (define-derived-mode rails-test:compilation-mode compilation-mode "RTest"
   "Major mode for RoR tests."
