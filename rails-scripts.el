@@ -138,6 +138,13 @@ For example -c to remove files from svn.")
 (defun rails-script:running-p ()
   (get-buffer-process rails-script:buffer-name))
 
+(defun rails-script:kill-script ()
+  "Kill the currently running rails script"
+  (interactive)
+  (let ((proc (rails-script:running-p)))
+    (if proc
+	(delete-process proc))))
+
 (defun rails-script:sentinel-proc (proc msg)
   (let* ((name rails-script:running-script-name)
          (ret-val (process-exit-status proc))
@@ -330,3 +337,4 @@ BUFFER-MAJOR-MODE and process-sentinel SENTINEL."
   (rails-script:run-interactive "breakpointer" "script/breakpointer"))
 
 (provide 'rails-scripts)
+

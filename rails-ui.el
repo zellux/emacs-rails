@@ -86,12 +86,14 @@
 (defconst rails-minor-mode-tests-menu-bar-map
   (let ((map (make-sparse-keymap)))
     (define-keys map
+      ([kill-current] '(menu-item "Kill Test" rails-script:kill-script :enable (rails-script:running-p)))
+      ([separator0]   '("--"))
       ([integration] '("Integration Tests" . rails-test:run-integration))
       ([unit]        '("Unit Tests"        . rails-test:run-units))
       ([functional]  '("Functional Tests"  . rails-test:run-functionals))
       ([recent]      '("Recent Tests"      . rails-test:run-recent))
       ([tests]       '("All"               . rails-test:run-all))
-      ([separator]   '("--"))
+      ([separator1]   '("--"))
       ([toggle]      '(menu-item "Toggle Output Window" rails-script:toggle-output-window
                                  :enable (get-buffer rails-script:buffer-name)))
       ([run-current] '("Test Current Model/Controller/Mailer" . rails-test:run-current))
@@ -127,6 +129,8 @@
   ([rails separator1]        '("--"))
 
   ([rails scr] (cons "Scripts" (make-sparse-keymap "Scripts")))
+  ([rails scr kill]    '(menu-item "Kill current script" rails-script:kill-script :enable (rails-script:running-p)))
+  ([rails scr separator]  '("--"))
 
   ([rails scr gen] (cons "Generate" (make-sparse-keymap "Generate")))
   ([rails scr destr] (cons "Destroy" (make-sparse-keymap "Generators")))
@@ -237,6 +241,7 @@
   ((kbd "<C-return>")    'rails-goto-file-on-current-line)
 
   ;; Scripts & SQL
+  ((rails-key "\C-c k")   'rails-script:kill-script)
   ((rails-key "\C-c e")   'rails-script:generate)
   ((rails-key "\C-c x")   'rails-script:destroy)
   ((rails-key "\C-c s c") 'rails-script:console)
