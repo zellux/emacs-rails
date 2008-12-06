@@ -1,7 +1,3 @@
-* 2008-12-04
-  Joost Diepenmaat <joost@zeekat.nl> - 
-  Added "Kill script" command to abort current script / rake task
-
 SVN
 * Feature [#1853]: added support of thin (http://code.macournoyer.com/thin/)
 * Fixed [#16742]: pass rails environment to script/console
