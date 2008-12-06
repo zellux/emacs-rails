@@ -321,4 +321,85 @@
     [create-rails-project]
     '("Create Rails Project" . rails-script:create-project) 'insert-file))
 
+;; mode-line info
+
+(defvar rails-ui:mode-line-script-name "")
+(put 'rails-ui:mode-line-script-name 'risky-local-variable t)
+(defvar rails-ui:mode-line-test-results "")
+(put 'rails-ui:mode-line-test-results 'risky-local-variable t)
+
+(defvar rails-ui:mode-line '(:propertize (" " rails-ui:mode-line-script-name rails-ui:mode-line-test-results)))
+					 
+(put 'rails-ui:mode-line 'risky-local-variable t)
+
+(defvar rails-ui:mode-line-enabled nil)
+
+(defvar rails-ui:num-errors 0)
+(defvar rails-ui:num-failures 0)
+(defvar rails-ui:num-ok 0)
+
+(defvar rails-ui:idle-script-line (propertize "idle" 'help-echo "No script running.\nmouse-1: go to output buffer" ))
+
+(defcustom rails-ui:show-mode-line
+  't
+  "Show test and script status in the mode-line"
+  :type 'boolean
+  :group 'rails
+  :tag "Rails show mode line")
+
+(defun rails-ui:update-mode-line (&optional once?)
+  (when rails-ui:mode-line-enabled
+    (if (rails-script:running-p)
+	(setq rails-ui:mode-line-script-name 
+	      (propertize rails-ui:mode-line-script-name
+			  'help-echo (concat "running " rails-script:running-script-name "\nmouse-1: show output\nmouse-2: kill script")
+			  'face 'mode-line-emphasis
+			  'mouse-face 'mode-line-highlight
+			  'local-map '(keymap (mode-line keymap
+							 (mouse-1 . (lambda () (interactive) (rails-script:popup-buffer)))
+							 (mouse-2 . rails-script:kill-script)))))
+      (setq rails-ui:mode-line-script-name rails-ui:idle-script-line))
+    (let ((ok (number-to-string rails-ui:num-ok))
+	  (errors (number-to-string rails-ui:num-errors))
+	  (failures (number-to-string rails-ui:num-failures)))
+      (let ((results (propertize
+		      (concat ok "F" failures "E" errors)
+		      'help-echo (concat ok " Tests, "
+					 errors " Errors, "
+					 failures " Failures"))))
+	(if (> (+ rails-ui:num-errors rails-ui:num-failures) 0)
+	    (setq  results (propertize results 'face 'compilation-error)))
+	(setq rails-ui:mode-line-test-results (concat " [" results "]"))))
+    (unless once?
+      (run-at-time "5 sec" nil #'rails-ui:update-mode-line))))
+
+(defun rails-ui:reset-error-count ()
+  (setq rails-ui:num-ok 0
+	rails-ui:num-errors 0
+	rails-ui:num-failures 0))
+
+
+
+(defun rails-ui:enable-mode-line ()
+  (interactive)
+  (unless rails-ui:mode-line-enabled
+    (setq rails-ui:mode-line-enabled 1)
+    (unless (memq 'rails-ui:mode-line global-mode-string)
+      (setq global-mode-string
+	    (append global-mode-string '(rails-ui:mode-line))))
+    (rails-ui:update-mode-line)))
+
+
+(defun rails-ui:disable-mode-line ()
+  (interactive)
+  (if rails-ui:mode-line-enabled
+      (progn
+	(setq rails-ui:mode-line-enabled nil)
+	(setq global-mode-string
+	      (remove 'rails-ui:mode-line global-mode-string)))))
+
+(add-hook 'rails-minor-mode-hook (lambda ()
+				   (if rails-ui:show-mode-line
+				       (rails-ui:enable-mode-line))))
+
 (provide 'rails-ui)

@@ -1,3 +1,7 @@
+2008-12-06 "Joost Diepenmaat" <joost@zeekat.nl>
+	* Added mode-line status reporting
+	* Made rails-test:quiet the default
+
 2008-12-04 "Joost Diepenmaat" <joost@zeekat.nl>
 	* Added "Kill script" command to abort current script / rake task
 

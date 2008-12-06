@@ -27,13 +27,14 @@
 ;;; Code:
 
 
-(defcustom rails-test:quiet nil
+(defcustom rails-test:quiet 't
   "Do not show test progress in minibuffer."
   :group 'rails
   :type 'boolean
   :tag "Rails Quiet Tests")
 
 (defvar rails-test:history nil)
+
 
 (defconst rails-test:result-regexp
   "\\([0-9]+ tests, [0-9]+ assertions, \\([0-9]+\\) failures, \\([0-9]+\\) errors\\)")
@@ -89,19 +90,28 @@
         (rails-script:popup-buffer)))))
 
 (defun rails-test:print-progress (start end len)
-  (if (not rails-test:quiet)
-    (let (content)
-      (save-excursion
-        (goto-char (point-min))
-        (while (re-search-forward "^Started" end t)
-          (line-move 1)
-          (save-match-data
-            (let ((progress (string=~ rails-test:progress-regexp
-                                      (current-line-string) $m)))
-              (when progress
-                (setq content (concat content progress)))))))
-      (when content
-        (message "Progress of %s: %s" rails-script:running-script-name content)))))
+  (let (content)
+    (save-excursion
+      (goto-char (point-min))
+      (while (re-search-forward "^Started" end t)
+	(line-move 1)
+	(save-match-data
+	  (let ((progress (string=~ rails-test:progress-regexp
+				    (current-line-string) $m)))
+	    (when progress
+	      (setq content (concat content progress))
+	      (setq rails-ui:num-errors 0
+		    rails-ui:num-failures 0
+		    rails-ui:num-ok 0)
+	      (dolist (c (string-to-list content))
+		(case c
+		  (?\E (setq rails-ui:num-errors (+ 1 rails-ui:num-errors)))
+		  (?\F (setq rails-ui:num-failures (+ 1 rails-ui:num-failures)))
+		  (?\. (setq rails-ui:num-ok (+ 1 rails-ui:num-ok)))))
+	      (rails-ui:update-mode-line 1))))))
+    (when (and content  
+	       (not rails-test:quiet))
+      (message "Progress of %s: %s" rails-script:running-script-name content))))
 
 (define-derived-mode rails-test:compilation-mode compilation-mode "RTest"
   "Major mode for RoR tests."
@@ -163,6 +173,7 @@ Used when it's determined that the output buffer needs to be shown."
   (interactive (rails-completing-read "What test run"
                                       (rails-test:list-of-tasks)
                                       'rails-test:history t))
+  (rails-ui:reset-error-count)
   (unless task
     (setq task "all")
     (add-to-list rails-test:history task))
@@ -170,16 +181,20 @@ Used when it's determined that the output buffer needs to be shown."
          (if (string= "all" task)
              "test"
            (concat "test:" task))))
-    (rails-rake:task task-name 'rails-test:compilation-mode)))
+    (rails-rake:task task-name 'rails-test:compilation-mode (concat "test " task))))
 
 (defun rails-test:run-single-file (file &optional param)
   "Run test for single file FILE."
   (when (not (or file param))
     "Refuse to run ruby without an argument: it would never return")
+  (rails-ui:reset-error-count)
   (let ((param (if param
                    (list file param)
-                 (list file))))
-    (rails-script:run "ruby" (append (list "-Itest") param) 'rails-test:compilation-mode)))
+                 (list file)))
+	(test-name file))
+    (if (string-match "\\([^/\\\\.]+\\)_test\.rb$" test-name)
+	(setq test-name (concat "test " (match-string-no-properties 1 test-name))))
+    (rails-script:run "ruby" (append (list "-Itest") param) 'rails-test:compilation-mode test-name)))
 
 (defun rails-test:run-current ()
   "Run a test for the current controller/model/mailer."

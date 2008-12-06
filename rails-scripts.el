@@ -159,7 +159,7 @@ For example -c to remove files from svn.")
     (with-current-buffer buf
       (run-hooks 'rails-script:run-after-stop-hook))))
 
-(defun rails-script:run (command parameters &optional buffer-major-mode)
+(defun rails-script:run (command parameters &optional buffer-major-mode mode-line-string)
   "Run a Rails script COMMAND with PARAMETERS with
 BUFFER-MAJOR-MODE and process-sentinel SENTINEL."
   (unless (listp parameters)
@@ -189,6 +189,8 @@ BUFFER-MAJOR-MODE and process-sentinel SENTINEL."
                (if (= 1 (length parameters))
                    (format "%s %s" command (first parameters))
                  (format "%s %s" (first parameters) (first (cdr parameters)))))
+	 (setq rails-ui:mode-line-script-name (or mode-line-string
+						  command))
          (message "Starting %s." rails-script:running-script-name))))))
 
 ;;;;;;;;;; Destroy stuff ;;;;;;;;;;
