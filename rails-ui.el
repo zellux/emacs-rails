@@ -328,17 +328,19 @@
 (defvar rails-ui:mode-line-test-results "")
 (put 'rails-ui:mode-line-test-results 'risky-local-variable t)
 
-(defvar rails-ui:mode-line '(:propertize (" " rails-ui:mode-line-script-name rails-ui:mode-line-test-results)))
-					 
+(defvar rails-ui:mode-line '(:propertize (" " rails-ui:mode-line-script-name rails-ui:ticker-string rails-ui:mode-line-test-results)))
 (put 'rails-ui:mode-line 'risky-local-variable t)
 
 (defvar rails-ui:mode-line-enabled nil)
-
 (defvar rails-ui:num-errors 0)
 (defvar rails-ui:num-failures 0)
 (defvar rails-ui:num-ok 0)
 
-(defvar rails-ui:idle-script-line (propertize "idle" 'help-echo "No script running.\nmouse-1: go to output buffer" ))
+(defvar rails-ui:idle-script-line (propertize "idle" 
+					      'help-echo "No script running.\nmouse-1: toggle output window"
+					      'mouse-face 'mode-line-highlight
+					      'local-map '(keymap (mode-line keymap
+							 (mouse-1 . rails-script:toggle-output-window)))))
 
 (defcustom rails-ui:show-mode-line
   't
@@ -352,12 +354,12 @@
     (if (rails-script:running-p)
 	(setq rails-ui:mode-line-script-name 
 	      (propertize rails-ui:mode-line-script-name
-			  'help-echo (concat "running " rails-script:running-script-name "\nmouse-1: show output\nmouse-2: kill script")
+			  'help-echo (concat "running " rails-script:running-script-name "\nmouse-1: toggle output window\nmouse-2: kill script")
 			  'face 'mode-line-emphasis
 			  'mouse-face 'mode-line-highlight
 			  'local-map '(keymap (mode-line keymap
-							 (mouse-1 . (lambda () (interactive) (rails-script:popup-buffer)))
-							 (mouse-2 . rails-script:kill-script)))))
+							 (mouse-1 . rails-script:toggle-output-window))
+							 (mouse-2 . rails-script:kill-script))))
       (setq rails-ui:mode-line-script-name rails-ui:idle-script-line))
     (let ((ok (number-to-string rails-ui:num-ok))
 	  (errors (number-to-string rails-ui:num-errors))
@@ -377,8 +379,6 @@
   (setq rails-ui:num-ok 0
 	rails-ui:num-errors 0
 	rails-ui:num-failures 0))
-
-
 
 (defun rails-ui:enable-mode-line ()
   (interactive)
