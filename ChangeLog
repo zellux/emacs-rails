@@ -1,12 +1,15 @@
+2008-12-09 "Joost Diepenmaat" <joost@zeekat.nl>
+	* rails-ui.el: modeline code cleanup
+
 2008-12-08 "Joost Diepenmaat" <joost@zeekat.nl>
-	* fixed keymap for modeline and use toggle-output-window
+	* rails-ui.el: fixed keymap for modeline and use toggle-output-window
 
 2008-12-06 "Joost Diepenmaat" <joost@zeekat.nl>
-	* Added mode-line status reporting
-	* Made rails-test:quiet the default
+	* rails-ui.el:  Added mode-line status reporting
+	* rails-test.el: Made rails-test:quiet the default
 
 2008-12-04 "Joost Diepenmaat" <joost@zeekat.nl>
-	* Added "Kill script" command to abort current script / rake task
+	* rails-script.el: Added "Kill script" command to abort current script / rake task
 
 2008-04-29  Tom ten Thij  <mail@tomtenthij.nl>
 

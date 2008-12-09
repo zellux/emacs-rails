@@ -323,24 +323,47 @@
 
 ;; mode-line info
 
-(defvar rails-ui:mode-line-script-name "")
-(put 'rails-ui:mode-line-script-name 'risky-local-variable t)
-(defvar rails-ui:mode-line-test-results "")
-(put 'rails-ui:mode-line-test-results 'risky-local-variable t)
+(defvar rails-ui:mode-line-script-name ""
+  "A short name for the currently running script")
 
-(defvar rails-ui:mode-line '(:propertize (" " rails-ui:mode-line-script-name rails-ui:ticker-string rails-ui:mode-line-test-results)))
+(defvar rails-ui:num-errors 0
+  "Number of errors in the latest test task.")
+(defvar rails-ui:num-failures 0
+  "Number of failures in the latest test task.")
+(defvar rails-ui:num-ok 0
+  "Number of tests in the latest test task.")
+
+(defun rails-ui:reset-error-count ()
+  "Reset number of tests/errors/failures to 0."
+  (setq rails-ui:num-ok 0
+	rails-ui:num-errors 0
+	rails-ui:num-failures 0))
+
+(defvar rails-ui:mode-line '(:propertize (" " rails-ui:mode-line-script-string rails-ui:mode-line-test-results))
+  "`rails-mode''s mode-line construct")
+
 (put 'rails-ui:mode-line 'risky-local-variable t)
-
-(defvar rails-ui:mode-line-enabled nil)
-(defvar rails-ui:num-errors 0)
-(defvar rails-ui:num-failures 0)
-(defvar rails-ui:num-ok 0)
 
 (defvar rails-ui:idle-script-line (propertize "idle" 
 					      'help-echo "No script running.\nmouse-1: toggle output window"
 					      'mouse-face 'mode-line-highlight
 					      'local-map '(keymap (mode-line keymap
 							 (mouse-1 . rails-script:toggle-output-window)))))
+
+(defvar rails-ui:mode-line-script-string 
+  '(:eval (if (rails-script:running-p)
+	      (propertize rails-ui:mode-line-script-name
+			  'help-echo (concat "running " 
+					     rails-script:running-script-name 
+					     "\nmouse-1: toggle output window\nmouse-2: kill script")
+			  'face 'bold
+			  'mouse-face 'mode-line-highlight
+			  'local-map '(keymap (mode-line keymap
+							 (mouse-1 . rails-script:toggle-output-window))
+					      (mouse-2 . rails-script:kill-script)))
+	    rails-ui:idle-script-line)))
+
+(put 'rails-ui:mode-line-script-string 'risky-local-variable t)
 
 (defcustom rails-ui:show-mode-line
   't
@@ -349,54 +372,32 @@
   :group 'rails
   :tag "Rails show mode line")
 
-(defun rails-ui:update-mode-line (&optional once?)
-  (when rails-ui:mode-line-enabled
-    (if (rails-script:running-p)
-	(setq rails-ui:mode-line-script-name 
-	      (propertize rails-ui:mode-line-script-name
-			  'help-echo (concat "running " rails-script:running-script-name "\nmouse-1: toggle output window\nmouse-2: kill script")
-			  'face 'mode-line-emphasis
-			  'mouse-face 'mode-line-highlight
-			  'local-map '(keymap (mode-line keymap
-							 (mouse-1 . rails-script:toggle-output-window))
-							 (mouse-2 . rails-script:kill-script))))
-      (setq rails-ui:mode-line-script-name rails-ui:idle-script-line))
-    (let ((ok (number-to-string rails-ui:num-ok))
-	  (errors (number-to-string rails-ui:num-errors))
-	  (failures (number-to-string rails-ui:num-failures)))
-      (let ((results (propertize
-		      (concat ok "F" failures "E" errors)
-		      'help-echo (concat ok " Tests, "
-					 errors " Errors, "
-					 failures " Failures"))))
-	(if (> (+ rails-ui:num-errors rails-ui:num-failures) 0)
-	    (setq  results (propertize results 'face 'compilation-error)))
-	(setq rails-ui:mode-line-test-results (concat " [" results "]"))))
-    (unless once?
-      (run-at-time "5 sec" nil #'rails-ui:update-mode-line))))
+(defvar rails-ui:mode-line-test-results
+  '(:eval
+    (let ((results (propertize
+		    (format "%dE%dF%d" rails-ui:num-ok rails-ui:num-errors rails-ui:num-failures)
+		    'help-echo (format "%d Tests, %d Errors, %d Failures." 
+				       rails-ui:num-ok 
+				       rails-ui:num-errors 
+				       rails-ui:num-failures))))
+      (if (> (+ rails-ui:num-errors rails-ui:num-failures) 0)
+	  (setq results (propertize results 'face 'compilation-error)))
+      (concat " [" results "]"))))
 
-(defun rails-ui:reset-error-count ()
-  (setq rails-ui:num-ok 0
-	rails-ui:num-errors 0
-	rails-ui:num-failures 0))
+(put 'rails-ui:mode-line-test-results 'risky-local-variable t)
 
 (defun rails-ui:enable-mode-line ()
+  "Add the rails mode-line to the global mode-string."
   (interactive)
-  (unless rails-ui:mode-line-enabled
-    (setq rails-ui:mode-line-enabled 1)
-    (unless (memq 'rails-ui:mode-line global-mode-string)
-      (setq global-mode-string
-	    (append global-mode-string '(rails-ui:mode-line))))
-    (rails-ui:update-mode-line)))
-
+  (unless (memq 'rails-ui:mode-line global-mode-string)
+    (setq global-mode-string
+	  (append global-mode-string '(rails-ui:mode-line)))))
 
 (defun rails-ui:disable-mode-line ()
+  "Remove the rails mode-line from the global mode-string."
   (interactive)
-  (if rails-ui:mode-line-enabled
-      (progn
-	(setq rails-ui:mode-line-enabled nil)
-	(setq global-mode-string
-	      (remove 'rails-ui:mode-line global-mode-string)))))
+  (setq global-mode-string
+	(remove 'rails-ui:mode-line global-mode-string)))
 
 (add-hook 'rails-minor-mode-hook (lambda ()
 				   (if rails-ui:show-mode-line

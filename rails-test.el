@@ -107,8 +107,7 @@
 		(case c
 		  (?\E (setq rails-ui:num-errors (+ 1 rails-ui:num-errors)))
 		  (?\F (setq rails-ui:num-failures (+ 1 rails-ui:num-failures)))
-		  (?\. (setq rails-ui:num-ok (+ 1 rails-ui:num-ok)))))
-	      (rails-ui:update-mode-line 1))))))
+		  (?\. (setq rails-ui:num-ok (+ 1 rails-ui:num-ok))))))))))
     (when (and content  
 	       (not rails-test:quiet))
       (message "Progress of %s: %s" rails-script:running-script-name content))))
