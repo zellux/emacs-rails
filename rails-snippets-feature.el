@@ -173,6 +173,8 @@
        ("%ifel" "<% if $${cond} -%>\n$.\n<% else -%>\n<% end -%>" "<% if/else/end %>")
        ("%unless" "<% unless $${cond} -%>\n$.\n<% end -%>" "<% unless/end %>")
        ("%for" "<% for $${elem} in @$${list} %>\n$>$.\n<% end %>$>" "<% for/end %>")
+       ("han" "$${Model}.human_attribute_name('$${title}')" "human_attribute_name")
+       ("hn" "$${Model}.human_name" "human_name")
        ("%" "<% $. -%>" "<% ... %>")
        ("%%" "<%= $. %>" "<%= ... %>")) ; erb
     (0 "controller" rails-controller-minor-mode-abbrev-table
@@ -210,7 +212,7 @@
        ("rns" "render :nothing => $${true}, :status => $${401}" "render (nothing, status)")
        ("rp" "render :partial => '$${item}'" "render (partial)")
        ("rpc" "render :partial => '$${item}', :collection => $${items}" "render (partial, collection)")
-       ("rpl" "render :partial => '$${item}', :locals => { :$${name} => '$${value}'$${4} }" "render (partial, locals)")
+       ("rpl" "render :partial => '$${item}', :locals => { :$${name} => $${value} }" "render (partial, locals)")
        ("rpo" "render :partial => '$${item}', :object => $${object}" "render (partial, object)")
        ("rcea" "render_component :action => '$${index}'" "render_component (action)")
        ("rcec" "render_component :controller => '$${items}'" "render_component (controller)")
@@ -272,7 +274,7 @@
        ("shoulds" "should \"$${description}\" do\n$>flunk\nend$>\n\n$>shoulds$." "several should blocks")
        ("shoulde" "should_eventually \"$${description}\" do\n $>$.\nend$>" "should_eventually block")
        ("shouldes" "should_eventually \"$${description}\"\n$>shouldes$." "several should_eventually statements")
-       ("laf" "load_all_fixtures" "load_all_fixtures")
+       ("laf" "fixtures :all" "fixtures :all")
        ("sat" "should_assign_to :$${variable}" "should_assign_to")
        ("savf" "should_allow_values_for :$${attribute}" "should_allow_values_for")
        ("sbt" "should_belong_to :$${object}" "should_belong_to")
@@ -315,6 +317,8 @@
        ("asrt" "assert_respond_to $${object}, :$${method}" "assert_respond_to(...)")
        ("ass" "assert_same $${expected}, $${actual}" "assert_same(...)")
        ("assd" "assert_send [$${object}, :$${message}, $${args}]" "assert_send(...)")
+       ("asd" "assert_difference \"$${count}\", $${1} do\n$>$.\nend$>" "assert_difference .. do .. end")
+       ("asnd" "assert_no_difference \"$${count}\" do\n$>$.\nend$>" "assert_no_difference .. do .. end")
        ("ast" "assert_throws :$${expected} { $. }" "assert_throws(...) { ... }")
        ("astm" "assert_template '$${index}'" "assert_template"))))
 

@@ -316,7 +316,7 @@
   ([f1]                  'rails-search-doc)
   ((kbd "<C-f1>")        'rails-browse-api-at-point)
   ((rails-key "<f1>")     'rails-browse-api)
-;;  ((rails-key "/")        'rails-script:toggle-output-window)
+  ((rails-key "/")        'rails-script:toggle-output-window)
 
   ([f9]                  'rails-svn-status-into-root))
 
