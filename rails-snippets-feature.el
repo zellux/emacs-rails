@@ -158,7 +158,7 @@
        ("head" "<head>\n$><meta http-equiv=\"Content-type\" content=\"text/html; charset=utf-8\"/>\n$><title>$${title}</title>\n$>$.\n</head>" "head")
        ("h" "<h1 id=\"$${alpha}\">$${paste}</h1>" "heading")
        ("ft" "<%= form_tag :action => \"$${update}\" %>\n$.\n<%= end_form_tag %>" "form_tag")
-       ("ff" "<%= form_for :$${item}, :action => \"$${update}\" %>\n$.\n<% end %>" "form_for")
+       ("ff" "<% form_for :$${item}, :action => \"$${update}\" do |f| -%>\n$.\n<% end -%>" "form_for")
        ("form" "<form action=\"$${action}\" method=\"$${post}\" accept-charset=\"utf-8\">\n$>$.\n\n$><p><input type=\"submit\" value=\"Continue &rarr;\"/></p>\n</form>" "form")
        ("dtht" "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\"\n$>\"http://www.w3.org/TR/html4/strict.dtd\">\n" "HTML -- 4.01 Strict")
        ("dchttr" "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\n$>\"http://www.w3.org/TR/html4/loose.dtd\">\n" "HTML -- 4.01 Transitional")
@@ -186,6 +186,7 @@
        rails-view-minor-mode-abbrev-table
        rails-helper-minor-mode-abbrev-table
        rails-functional-test-minor-mode-abbrev-table
+       rails-integration-test-minor-mode-abbrev-table
        ("rest" "respond_to do |format|\n$>format.html$>$.\nend$>" "respond_to ..." rails-controller-minor-mode-abbrev-table)
        ("rindex" "$${,rails-snippets-feature:rest-index}" "models_url")
        ("rshow" "$${,rails-snippets-feature:rest-show}" "model_url(@model)")
@@ -266,9 +267,9 @@
        ("par" "params[:$${id}]" "params[...]")
        ("session" "session[:$${User}]" "session[...]")
        ("flash" "flash[:$${notice}] = '$${Successfully}'$." "flash[...]")) ; environment
-    (0 "tests" rails-functional-test-minor-mode-abbrev-table rails-unit-test-minor-mode-abbrev-table
+    (0 "tests" rails-functional-test-minor-mode-abbrev-table rails-unit-test-minor-mode-abbrev-table rails-integration-test-minor-mode-abbrev-table
        ("fix" "$${,rails-snippets-feature:fixture}(:$${one})$." "models(:name)")) ; functional tests
-    (0 "shoulda" rails-functional-test-minor-mode-abbrev-table rails-unit-test-minor-mode-abbrev-table
+    (0 "shoulda" rails-functional-test-minor-mode-abbrev-table rails-unit-test-minor-mode-abbrev-table rails-integration-test-minor-mode-abbrev-table
        ("cont" "context \"$${description}\" do\n$>setup do\n$>$${setup}\nend$>\n\n$>should$.\nend$>" "context block with setup")
        ("should" "should \"$${description}\" do\n$>$.\nend$>" "should block")
        ("shoulds" "should \"$${description}\" do\n$>flunk\nend$>\n\n$>shoulds$." "several should blocks")
@@ -295,7 +296,7 @@
        ("srua" "should_require_unique_attributes :$${attribute}" "should_require_unique_attributes")
        ("srw" "should_respond_with :$${response}" "should_respond_with")
        ("sstft" "should_set_the_flash_to $${value}" "should_set_the_flash_to")) ; shoulda tests
-    (0 "assertions" rails-functional-test-minor-mode-abbrev-table rails-unit-test-minor-mode-abbrev-table
+    (0 "assertions" rails-functional-test-minor-mode-abbrev-table rails-unit-test-minor-mode-abbrev-table rails-integration-test-minor-mode-abbrev-table
        ("art" "assert_redirected_to :action => '$${index}'" "assert_redirected_to")
        ("as" "assert $${test}" "assert(...)")
        ("asa" "assert assigns(:$${,rails-snippets-feature:model-name})" "assert assigns(...)")
