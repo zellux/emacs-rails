@@ -29,6 +29,7 @@
 (defconst rails-snippets-feature:list
   '((0 "ruby")
     (1 "loops" ruby-mode-abbrev-table
+       ("end" "$>$.\nend$>" "end") ;; to avoid expanding when i want to indent
        ("while" "while $${condition}\n$>$.\nend$>" "while ... end")
        ("when" "when $${condition}\n$>$." "when ...")
        ("w" "attr_writer :$${attr_names}" "attr_writer ...")
@@ -172,6 +173,8 @@
        ("%ifel" "<% if $${cond} -%>\n$.\n<% else -%>\n<% end -%>" "<% if/else/end %>")
        ("%unless" "<% unless $${cond} -%>\n$.\n<% end -%>" "<% unless/end %>")
        ("%for" "<% for $${elem} in @$${list} %>\n$>$.\n<% end %>$>" "<% for/end %>")
+       ("han" "$${Model}.human_attribute_name('$${title}')" "human_attribute_name")
+       ("hn" "$${Model}.human_name" "human_name")
        ("%" "<% $. -%>" "<% ... %>")
        ("%%" "<%= $. %>" "<%= ... %>")) ; erb
     (0 "controller" rails-controller-minor-mode-abbrev-table
@@ -209,7 +212,7 @@
        ("rns" "render :nothing => $${true}, :status => $${401}" "render (nothing, status)")
        ("rp" "render :partial => '$${item}'" "render (partial)")
        ("rpc" "render :partial => '$${item}', :collection => $${items}" "render (partial, collection)")
-       ("rpl" "render :partial => '$${item}', :locals => { :$${name} => '$${value}'$${4} }" "render (partial, locals)")
+       ("rpl" "render :partial => '$${item}', :locals => { :$${name} => $${value} }" "render (partial, locals)")
        ("rpo" "render :partial => '$${item}', :object => $${object}" "render (partial, object)")
        ("rcea" "render_component :action => '$${index}'" "render_component (action)")
        ("rcec" "render_component :controller => '$${items}'" "render_component (controller)")
@@ -228,6 +231,8 @@
        ("rdl" "RAILS_DEFAULT_LOGGER.debug '$${message}'$." "RAILS_DEFAULT_LOGGER.debug")
        ("nr" "@$${item}.new_record?" "item.new_record?")) ; rails
     (0 "model" rails-model-minor-mode-abbrev-table
+       ("ns" "named_scope :$${name}, :conditions => {:$${attribute} => $${value}}" "named_scope")
+       ("nsl" "named_scope :$${name},  lambda {|$${param}| { :conditions => ['$${attribute} > ?', $${param}]} }" "named_scope_lamba")
        ("va" "validates_associated :$${attribute}" "validates_associated")
        ("vc" "validates_confirmation_of :$${attribute}" "validates_confirmation_of")
        ("ve" "validates_exclusion_of :$${attribute}" "validates_exclusion_of")
@@ -239,7 +244,7 @@
        ("hm" "has_many :$${objects}" "has_many")
        ("hmt" "has_many :$${objects}, :through => :$${,rails-snippets-feature:prev-has-many-table-name}" "has_many :through")
        ("ho" "has_one :$${object}" "has_one")
-       ("habtm" "has_and_belongs_to_many :$${object}" "has_and_belongs_to_many")) ; model
+       ("habtm" "has_and_belongs_to_many :$${object}, :join_table => '$${table_name}', :foreign_key => '$${foreign_key}'" "has_and_belongs_to_many")) ; model
     (0 "migrations" rails-migration-minor-mode-abbrev-table
        ("tcls" "t.column :$${title}, :$${string}\n$>tcls$." "create several columns")
        ("tcl" "t.column :$${title}, :$${string}$." "create column")
@@ -269,7 +274,7 @@
        ("shoulds" "should \"$${description}\" do\n$>flunk\nend$>\n\n$>shoulds$." "several should blocks")
        ("shoulde" "should_eventually \"$${description}\" do\n $>$.\nend$>" "should_eventually block")
        ("shouldes" "should_eventually \"$${description}\"\n$>shouldes$." "several should_eventually statements")
-       ("laf" "load_all_fixtures" "load_all_fixtures")
+       ("laf" "fixtures :all" "fixtures :all")
        ("sat" "should_assign_to :$${variable}" "should_assign_to")
        ("savf" "should_allow_values_for :$${attribute}" "should_allow_values_for")
        ("sbt" "should_belong_to :$${object}" "should_belong_to")
@@ -312,6 +317,8 @@
        ("asrt" "assert_respond_to $${object}, :$${method}" "assert_respond_to(...)")
        ("ass" "assert_same $${expected}, $${actual}" "assert_same(...)")
        ("assd" "assert_send [$${object}, :$${message}, $${args}]" "assert_send(...)")
+       ("asd" "assert_difference \"$${count}\", $${1} do\n$>$.\nend$>" "assert_difference .. do .. end")
+       ("asnd" "assert_no_difference \"$${count}\" do\n$>$.\nend$>" "assert_no_difference .. do .. end")
        ("ast" "assert_throws :$${expected} { $. }" "assert_throws(...) { ... }")
        ("astm" "assert_template '$${index}'" "assert_template"))))
 
