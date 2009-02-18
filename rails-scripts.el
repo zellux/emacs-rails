@@ -322,16 +322,19 @@ BUFFER-MAJOR-MODE and process-sentinel SENTINEL."
      (setq ruby-buffer buffer-name))
    (rails-minor-mode t)))
 
-(defun rails-script:console ()
-  "Run script/console."
-  (interactive)
-  (let* ((name (format "console at (%s)" rails-default-environment))
+(defun rails-script:console (&optional environment)
+  "Run script/console. With prefix arg, prompts for environment."
+  (interactive (list
+                (and current-prefix-arg
+                     (read-buffer "Environment: " rails-default-environment))))
+  (let* ((environment (or environment rails-default-environment))
+         (name (format "console at (%s)" environment))
 	 (buffer (get-buffer (format "*rails-%s-%s*" (rails-project:name) name))))
     (if buffer
 	(switch-to-buffer-other-window buffer)
 	(rails-script:run-interactive name
 				      "script/console"
-				      rails-default-environment))))
+				      environment))))
 
 (defun rails-script:breakpointer ()
   "Run script/breakpointer."
