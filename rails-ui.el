@@ -288,6 +288,7 @@
   ((rails-key "\C-c r")   'rails-rake:task)
   ((rails-key "\C-c t")   'rails-test:run)
   ((rails-key "\C-c .")   'rails-test:run-current)
+  ((rails-key "\C-c /")   'rails-test:rerun-single)
   ((rails-key "\C-c y i")   'rails-test:run-integration)
   ((rails-key "\C-c y u")   'rails-test:run-units)
   ((rails-key "\C-c y f")   'rails-test:run-functionals)

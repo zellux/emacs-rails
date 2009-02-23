@@ -182,6 +182,9 @@ Used when it's determined that the output buffer needs to be shown."
            (concat "test:" task))))
     (rails-rake:task task-name 'rails-test:compilation-mode (concat "test " task))))
 
+(defvar rails-test:previous-run-single-param nil
+  "Hold params of previous run-single-file call.")
+
 (defun rails-test:run-single-file (file &optional param)
   "Run test for single file FILE."
   (when (not (or file param))
@@ -193,7 +196,15 @@ Used when it's determined that the output buffer needs to be shown."
 	(test-name file))
     (if (string-match "\\([^/\\\\.]+\\)_test\.rb$" test-name)
 	(setq test-name (concat "test " (match-string-no-properties 1 test-name))))
-    (rails-script:run "ruby" (append (list "-Itest") param) 'rails-test:compilation-mode test-name)))
+    (rails-script:run "ruby" (append (list "-Itest") param) 'rails-test:compilation-mode test-name)
+    (setq rails-test:previous-run-single-param param)))
+
+(defun rails-test:rerun-single ()
+  "Rerun previous single file test."
+  (interactive)
+  (if rails-test:previous-run-single-param
+    (apply 'rails-test:run-single-file rails-test:previous-run-single-param)
+    (message "No previous single file test recorded.")))
 
 (defun rails-test:run-current ()
   "Run a test for the current controller/model/mailer."
