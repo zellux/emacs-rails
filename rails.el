@@ -516,7 +516,6 @@ necessary."
 (setq auto-mode-alist  (cons '("\\.mab$"     . ruby-mode) auto-mode-alist))
 (setq auto-mode-alist  (cons '("Rakefile$"   . ruby-mode) auto-mode-alist))
 (setq auto-mode-alist  (cons '("\\.haml$"    . haml-mode) auto-mode-alist))
-(setq auto-mode-alist  (cons '("\\.rjs$"     . ruby-mode) auto-mode-alist))
 (setq auto-mode-alist  (cons '("\\.rxml$"    . ruby-mode) auto-mode-alist))
 (setq auto-mode-alist  (cons '("\\.builder$" . ruby-mode) auto-mode-alist))
 (setq auto-mode-alist  (cons '("\\.rjs$"     . ruby-mode) auto-mode-alist))
