@@ -294,9 +294,10 @@
   ((rails-key "\C-c r")   'rails-rake:task)
   ((rails-key "\C-c t")   'rails-test:run)
   ((rails-key "\C-c .")   'rails-test:run-current)
-  ((rails-key "\C-c y i") 'rails-test:run-integration)
-  ((rails-key "\C-c y u") 'rails-test:run-units)
-  ((rails-key "\C-c y f") 'rails-test:run-functionals)
+  ((rails-key "\C-c /")   'rails-test:rerun-single)
+  ((rails-key "\C-c y i")   'rails-test:run-integration)
+  ((rails-key "\C-c y u")   'rails-test:run-units)
+  ((rails-key "\C-c y f")   'rails-test:run-functionals)
   ((rails-key "\C-c #")   'rails-test:run-recent)
   ((rails-key "\C-c y a") 'rails-test:run-all)
 
@@ -357,17 +358,17 @@
 
 (put 'rails-ui:mode-line 'risky-local-variable t)
 
-(defvar rails-ui:idle-script-line (propertize "idle" 
+(defvar rails-ui:idle-script-line (propertize "idle"
 					      'help-echo "No script running.\nmouse-1: toggle output window"
 					      'mouse-face 'mode-line-highlight
 					      'local-map '(keymap (mode-line keymap
 							 (mouse-1 . rails-script:toggle-output-window)))))
 
-(defvar rails-ui:mode-line-script-string 
+(defvar rails-ui:mode-line-script-string
   '(:eval (if (rails-script:running-p)
 	      (propertize rails-ui:mode-line-script-name
-			  'help-echo (concat "running " 
-					     rails-script:running-script-name 
+			  'help-echo (concat "running "
+					     rails-script:running-script-name
 					     "\nmouse-1: toggle output window\nmouse-2: kill script")
 			  'face 'bold
 			  'mouse-face 'mode-line-highlight
@@ -389,9 +390,9 @@
   '(:eval
     (let ((results (propertize
 		    (format "%dE%dF%d" rails-ui:num-ok rails-ui:num-errors rails-ui:num-failures)
-		    'help-echo (format "%d Tests, %d Errors, %d Failures." 
-				       rails-ui:num-ok 
-				       rails-ui:num-errors 
+		    'help-echo (format "%d Tests, %d Errors, %d Failures."
+				       rails-ui:num-ok
+				       rails-ui:num-errors
 				       rails-ui:num-failures))))
       (if (> (+ rails-ui:num-errors rails-ui:num-failures) 0)
 	  (setq results (propertize results 'face 'compilation-error)))
