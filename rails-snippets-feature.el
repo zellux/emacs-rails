@@ -29,6 +29,7 @@
 (defconst rails-snippets-feature:list
   '((0 "ruby")
     (1 "loops" ruby-mode-abbrev-table
+       ("end" "$>$.\nend$>" "end") ;; to avoid expanding when i want to indent
        ("while" "while $${condition}\n$>$.\nend$>" "while ... end")
        ("when" "when $${condition}\n$>$." "when ...")
        ("w" "attr_writer :$${attr_names}" "attr_writer ...")
@@ -228,6 +229,8 @@
        ("rdl" "RAILS_DEFAULT_LOGGER.debug '$${message}'$." "RAILS_DEFAULT_LOGGER.debug")
        ("nr" "@$${item}.new_record?" "item.new_record?")) ; rails
     (0 "model" rails-model-minor-mode-abbrev-table
+       ("ns" "named_scope :$${name}, :conditions => {:$${attribute} => $${value}}" "named_scope")
+       ("nsl" "named_scope :$${name},  lambda {|$${param}| { :conditions => ['$${attribute} > ?', $${param}]} }" "named_scope_lamba")
        ("va" "validates_associated :$${attribute}" "validates_associated")
        ("vc" "validates_confirmation_of :$${attribute}" "validates_confirmation_of")
        ("ve" "validates_exclusion_of :$${attribute}" "validates_exclusion_of")
@@ -239,7 +242,7 @@
        ("hm" "has_many :$${objects}" "has_many")
        ("hmt" "has_many :$${objects}, :through => :$${,rails-snippets-feature:prev-has-many-table-name}" "has_many :through")
        ("ho" "has_one :$${object}" "has_one")
-       ("habtm" "has_and_belongs_to_many :$${object}" "has_and_belongs_to_many")) ; model
+       ("habtm" "has_and_belongs_to_many :$${object}, :join_table => '$${table_name}', :foreign_key => '$${foreign_key}'" "has_and_belongs_to_many")) ; model
     (0 "migrations" rails-migration-minor-mode-abbrev-table
        ("tcls" "t.column :$${title}, :$${string}\n$>tcls$." "create several columns")
        ("tcl" "t.column :$${title}, :$${string}$." "create column")
