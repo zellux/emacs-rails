@@ -23,6 +23,7 @@
 ;;; Code:
 
 (defun rails-rspec:run-current-method ()
+  "Run spec for the current example."
   (interactive)
   (save-excursion
     (let* ((file (substring (buffer-file-name) (length (rails-project:root))))
