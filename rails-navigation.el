@@ -269,7 +269,7 @@ Rules for actions/controllers:
     rails-line-->layout
     rails-line-->stylesheet
     rails-line-->js)
-  "Functions that will ne called to analyze the line when
+  "Functions that will be called to analyze the line when
 rails-goto-file-on-current-line is run.")
 
 (def-goto-line rails-line-->stylesheet (("[ ]*stylesheet_link_tag[ ][\"']\\([^\"']*\\)[\"']"
