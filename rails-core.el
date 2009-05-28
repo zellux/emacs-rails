@@ -136,11 +136,11 @@ it does not exist, ask to create it using QUESTION as a prompt."
 (defun rails-core:controller-file (controller-name)
   "Return the path to the controller CONTROLLER-NAME."
   (when controller-name
-    (concat "app/controllers/"
-            (rails-core:file-by-class
-             (rails-core:short-controller-name controller-name) t)
-            (unless (string-equal controller-name "Application") "_controller")
-            ".rb")))
+    (let* ((basename (rails-core:file-by-class (rails-core:short-controller-name controller-name) t))
+	   (exact (concat "app/controllers/" basename ".rb")))
+      (if (file-exists-p (rails-core:file exact))
+	exact
+	(concat "app/controllers/" basename "_controller.rb")))))
 
 (defun rails-core:controller-exist-p (controller-name)
   "Return t if controller CONTROLLER-NAME exist."
