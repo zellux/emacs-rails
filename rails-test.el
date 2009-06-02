@@ -229,16 +229,22 @@ Used when it's determined that the output buffer needs to be shown."
              (buffer-file-name)
            (error "Cannot determine whiche test file to run.")))))))
 
+(defun rails-test:active-support-test-case-current-test ()
+  (save-excursion
+    (ruby-end-of-block)
+    (and (search-backward-regexp "^[ ]*test \"\\([a-z0-9_ ]+\\)\"[ ]*do" nil t)
+         (match-string-no-properties 1))))
+
 (defun rails-test:run-current-method ()
   "Run a test for the current method."
   (interactive)
   (let ((file (substring (buffer-file-name) (length (rails-project:root))))
         (method (rails-core:current-method-name))
-        (shoulda-method (rails-shoulda:current-test)))
+        (description (or (rails-test:current-test) (rails-shoulda:current-test))))
     (when method
       (rails-test:run-single-file file (format "--name=%s" method)))
-    (when shoulda-method
-      (rails-test:run-single-file file (format "--name=/%s/" (replace-regexp-in-string "[\+\. \'\"\(\)]" "." shoulda-method))))))
+    (when description
+      (rails-test:run-single-file file (format "--name=/%s/" (replace-regexp-in-string "[\+\. \'\"\(\)]" "." description))))))
 
 ;; These functions were originally defined anonymously in ui. They are defined here so keys
 ;; can be added to them dryly
