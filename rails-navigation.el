@@ -268,7 +268,9 @@ Rules for actions/controllers:
     rails-line-->controller+action
     rails-line-->layout
     rails-line-->stylesheet
-    rails-line-->js)
+    rails-line-->js
+    rails-line-->single-association-model
+    rails-line-->multi-association-model)
   "Functions that will be called to analyze the line when
 rails-goto-file-on-current-line is run.")
 
@@ -301,6 +303,13 @@ rails-goto-file-on-current-line is run.")
   (rails-core:find-or-ask-to-create
    (format "JavaScript file \"%s\" does not exist do you whant to create it? " name)
    (rails-core:js-file name)))
+
+(def-goto-line rails-line-->single-association-model (("^[ \t]*\\(has_one\\|belongs_to\\)[ \t]*:\\([a-z0-9_]*\\)" (name 2)))
+  (rails-core:find-file (rails-core:model-file name)))
+
+(def-goto-line rails-line-->multi-association-model (("^[ \t]*\\(has_many\\|has_and_belongs_to_many\\)[ \t]*:\\([a-z0-9_]*\\)" (name 2)))
+  (message (singularize-string name))
+  (rails-core:find-file (rails-core:model-file (singularize-string name))))
 
 (defvar rails-line-to-controller/action-keywords
   '("render" "redirect_to" "link_to" "form_tag" "start_form_tag" "render_component"
