@@ -269,6 +269,7 @@ Rules for actions/controllers:
     rails-line-->layout
     rails-line-->stylesheet
     rails-line-->js
+    rails-line-->association-model
     rails-line-->single-association-model
     rails-line-->multi-association-model)
   "Functions that will be called to analyze the line when
@@ -303,6 +304,10 @@ rails-goto-file-on-current-line is run.")
   (rails-core:find-or-ask-to-create
    (format "JavaScript file \"%s\" does not exist do you whant to create it? " name)
    (rails-core:js-file name)))
+
+(def-goto-line rails-line-->association-model (("^[ \t]*\\(has_one\\|belongs_to\\|has_many\\|has_and_belongs_to_many\\)[ \t].*:class_name[ \t]*=>[ \t]*[\"']\\([^\"']*\\)[\"']"
+                                                (name 2)))
+  (rails-core:find-file (rails-core:model-file name)))
 
 (def-goto-line rails-line-->single-association-model (("^[ \t]*\\(has_one\\|belongs_to\\)[ \t]*:\\([a-z0-9_]*\\)" (name 2)))
   (rails-core:find-file (rails-core:model-file name)))
