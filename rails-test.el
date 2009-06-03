@@ -241,10 +241,10 @@ Used when it's determined that the output buffer needs to be shown."
   (let ((file (substring (buffer-file-name) (length (rails-project:root))))
         (method (rails-core:current-method-name))
         (description (or (rails-test:active-support-test-case-current-test) (rails-shoulda:current-test))))
-    (when method
-      (rails-test:run-single-file file (format "--name=%s" method)))
-    (when description
-      (rails-test:run-single-file file (format "--name=/%s/" (replace-regexp-in-string "[\+\. \'\"\(\)]" "." description))))))
+    (cond (description
+           (rails-test:run-single-file file (format "--name=/%s/" (replace-regexp-in-string "[\+\. \'\"\(\)]" "." description))))
+          (method
+           (rails-test:run-single-file file (format "--name=%s" method))))))
 
 ;; These functions were originally defined anonymously in ui. They are defined here so keys
 ;; can be added to them dryly
