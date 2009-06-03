@@ -68,7 +68,7 @@
   (interactive)
   (rails-nav:goto-file-with-menu-from-list
    (rails-core:controllers t)
-   "Go to controller"
+   "Go to controller.."
    'rails-core:controller-file))
 
 (defun rails-nav:goto-models ()
@@ -84,7 +84,7 @@
   (interactive)
   (rails-nav:goto-file-with-menu-from-list
    (rails-core:functional-tests)
-   "Go to functional test."
+   "Go to functional test.."
    'rails-core:functional-test-file))
 
 (defun rails-nav:goto-unit-tests ()
@@ -92,7 +92,7 @@
   (interactive)
   (rails-nav:goto-file-with-menu-from-list
    (rails-core:unit-tests)
-   "Go to unit test."
+   "Go to unit test.."
    'rails-core:unit-test-file))
 
 (defun rails-nav:goto-observers ()
@@ -141,7 +141,7 @@
   (interactive)
   (rails-nav:goto-file-with-menu-from-list
    (rails-core:rspec-controllers)
-   "Go to controller spec."
+   "Go to controller spec.."
    'rails-core:rspec-controller-file))
 
 (defun rails-nav:goto-rspec-lib ()
@@ -149,7 +149,7 @@
   (interactive)
   (rails-nav:goto-file-with-menu-from-list
    (rails-core:rspec-lib)
-   "Go to lib spec."
+   "Go to lib spec.."
    'rails-core:rspec-lib-file))
 
 (defun rails-nav:goto-rspec-models ()
@@ -157,7 +157,7 @@
   (interactive)
   (rails-nav:goto-file-with-menu-from-list
    (rails-core:rspec-models)
-   "Go to model spec."
+   "Go to model spec.."
    'rails-core:rspec-model-file))
 
 (defun rails-nav:goto-rspec-views ()
@@ -165,7 +165,7 @@
   (interactive)
   (rails-nav:goto-file-with-menu-from-list
    (rails-core:rspec-views)
-   "Go to view spec."
+   "Go to view spec.."
    'rails-core:rspec-view-file))
 
 (defun rails-nav:goto-rspec-fixtures ()
@@ -173,7 +173,7 @@
   (interactive)
   (rails-nav:goto-file-with-menu-from-list
    (rails-core:rspec-fixtures)
-   "Go to rspec fixtures."
+   "Go to rspec fixtures.."
    'rails-core:rspec-fixture-file))
 
 (defun rails-nav:create-new-layout (&optional name)
