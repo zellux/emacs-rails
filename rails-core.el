@@ -702,14 +702,22 @@ the Rails minor mode log."
 							 (cdr pane))))
 					 (cdr menu))))))
 
+(defun rails-core:ido-menu (menu)
+  (let* ((prompt (car menu))
+         (mappings (cdr (car (cdr menu))))
+         (choices (delete-if #'not (mapcar (lambda (item) (car item)) mappings)))
+         (result (ido-completing-read prompt choices)))
+    (or (cdr (assoc result mappings)) result)))
+
 (defun rails-core:menu (menu)
   "Show a menu."
   (let ((result
          (if (rails-use-text-menu)
-             (funcall (or rails-text-menu-function
-			  #'rails-core:tmm-menu) menu)
+           (funcall (or rails-text-menu-function
+                        (and (boundp 'ido-mode) ido-mode #'rails-core:ido-menu)
+                        #'rails-core:tmm-menu) menu)
            (x-popup-menu (rails-core:menu-position)
-                         (rails-core:prepare-menu  menu)))))
+                         (rails-core:prepare-menu menu)))))
     (if (listp result)
         (first result)
       result)))
