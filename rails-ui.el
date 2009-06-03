@@ -358,17 +358,17 @@
 
 (put 'rails-ui:mode-line 'risky-local-variable t)
 
-(defvar rails-ui:idle-script-line (propertize "idle" 
+(defvar rails-ui:idle-script-line (propertize "idle"
 					      'help-echo "No script running.\nmouse-1: toggle output window"
 					      'mouse-face 'mode-line-highlight
 					      'local-map '(keymap (mode-line keymap
 							 (mouse-1 . rails-script:toggle-output-window)))))
 
-(defvar rails-ui:mode-line-script-string 
+(defvar rails-ui:mode-line-script-string
   '(:eval (if (rails-script:running-p)
 	      (propertize rails-ui:mode-line-script-name
-			  'help-echo (concat "running " 
-					     rails-script:running-script-name 
+			  'help-echo (concat "running "
+					     rails-script:running-script-name
 					     "\nmouse-1: toggle output window\nmouse-2: kill script")
 			  'face 'bold
 			  'mouse-face 'mode-line-highlight
@@ -390,9 +390,9 @@
   '(:eval
     (let ((results (propertize
 		    (format "%dE%dF%d" rails-ui:num-ok rails-ui:num-errors rails-ui:num-failures)
-		    'help-echo (format "%d Tests, %d Errors, %d Failures." 
-				       rails-ui:num-ok 
-				       rails-ui:num-errors 
+		    'help-echo (format "%d Tests, %d Errors, %d Failures."
+				       rails-ui:num-ok
+				       rails-ui:num-errors
 				       rails-ui:num-failures))))
       (if (> (+ rails-ui:num-errors rails-ui:num-failures) 0)
 	  (setq results (propertize results 'face 'compilation-error)))

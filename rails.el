@@ -188,9 +188,12 @@ Emacs w3m browser."
     (:model            "app/models/" (lambda (file) (and (not (rails-core:mailer-p file))
                                                          (not (rails-core:observer-p file)))))
     (:helper           "app/helpers/")
+    (:unit-test        "vendor/plugins/.*/test/") ; needs to appear before more-general :plugin
+    (:model            "vendor/plugins/.*/lib/") ; needs to appear before more-general :plugin
     (:plugin           "vendor/plugins/")
     (:unit-test        "test/unit/")
     (:functional-test  "test/functional/")
+    (:integration-test  "test/integration/")
     (:fixture          "test/fixtures/")
     (:lib              "lib")
     (:rspec-controller "spec/controllers")
@@ -277,7 +280,7 @@ Emacs w3m browser."
           (kill-region (point-min) (point-max))
           (message (concat "Please wait..."))
           (call-process rails-ri-command nil "*ri*" t "-T" "-f" "ansi" item)
-          (local-set-key [return] 'rails-search-doc)
+;          (local-set-key [return] 'rails-search-doc) ; because this kicks in in text files. why? -mike
           (ansi-color-apply-on-region (point-min) (point-max))
           (setq buffer-read-only t)
           (goto-char (point-min))))))
@@ -470,7 +473,7 @@ necessary."
             (modify-syntax-entry ?! "w" (syntax-table))
             (modify-syntax-entry ?: "w" (syntax-table))
             (modify-syntax-entry ?_ "w" (syntax-table))
-            (local-set-key (kbd "C-.") 'complete-tag)
+            ;(local-set-key (kbd "C-.") 'complete-tag)
 	    (if rails-indent-and-complete
 		(local-set-key (if rails-use-another-define-key
 				   (kbd "TAB") (kbd "<tab>"))
