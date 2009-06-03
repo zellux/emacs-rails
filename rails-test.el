@@ -240,7 +240,7 @@ Used when it's determined that the output buffer needs to be shown."
   (interactive)
   (let ((file (substring (buffer-file-name) (length (rails-project:root))))
         (method (rails-core:current-method-name))
-        (description (or (rails-test:current-test) (rails-shoulda:current-test))))
+        (description (or (rails-test:active-support-test-case-current-test) (rails-shoulda:current-test))))
     (when method
       (rails-test:run-single-file file (format "--name=%s" method)))
     (when description
