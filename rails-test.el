@@ -194,7 +194,7 @@ Used when it's determined that the output buffer needs to be shown."
       ;; otherwise...
       (t (if (string-match "test.*\\.rb" (buffer-file-name))
              (buffer-file-name)
-           (error "Cannot determine whiche test file to run.")))))))
+           (error "Cannot determine which test file to run.")))))))
 
 (defun rails-test:run-current-method ()
   "Run a test for the current method."
