@@ -88,13 +88,14 @@
 If the action is nil, return all views for the controller."
   (rails-project:with-root
    (root)
-   (directory-files
-    (rails-core:file
-     (rails-core:views-dir
-      (rails-core:short-controller-name controller-name))) t
-      (if action
-          (concat "^" action (rails-core:regex-for-match-view))
-        (rails-core:regex-for-match-view)))))
+   (let ((dir (rails-core:file
+               (rails-core:views-dir
+                (rails-core:short-controller-name controller-name)))))
+     (if (file-directory-p dir)
+         (directory-files dir t
+          (if action
+              (concat "^" action (rails-core:regex-for-match-view))
+            (rails-core:regex-for-match-view)))))))
 
 (defun rails-controller-layout:views-menu (controller-name)
   "Make menu of view for CONTROLLER-NAME."
