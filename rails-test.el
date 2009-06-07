@@ -79,7 +79,10 @@
                      (not (zerop errors))
                      (not (zerop failures)))
                  (not (buffer-visible-p (current-buffer))))
-        (rails-script:popup-buffer)))))
+        (rails-script:popup-buffer))
+      (when (and (buffer-visible-p (current-buffer))
+                 (eq (point) (point-max)))
+        (set-window-start (get-buffer-window (current-buffer)) (point-min))))))
 
 (defun rails-test:print-progress (start end len)
   (let (content)
