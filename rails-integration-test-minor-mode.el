@@ -1,4 +1,4 @@
-;;; rails-model-minor-mode.el --- minor mode for RubyOnRails models
+;;; rails-integration-test-minor-mode.el --- minor mode for RubyOnRails integration tests
 
 ;; Copyright (C) 2006 Dmitry Galinsky <dima dot exe at gmail dot com>
 
@@ -26,12 +26,12 @@
 
 ;;; Code:
 
-(define-minor-mode rails-model-minor-mode
-  "Minor mode for RubyOnRails models."
-  :lighter " Model"
-  :keymap (rails-model-layout:keymap :model)
-  (if (rails-core:spec-exist-p) (setq rails-primary-switch-func 'rails-model-layout:switch-to-rspec-model)
-      (setq rails-primary-switch-func 'rails-model-layout:switch-to-unit-test))
-  (setq rails-secondary-switch-func 'rails-model-layout:menu))
+(define-minor-mode rails-integration-test-minor-mode
+  "Minor mode for RubyOnRails integration tests."
+  :lighter " ITest"
+  :keymap (let ((map (rails-controller-layout:keymap :integration-test)))
+            (define-key map rails-minor-mode-test-current-method-key 'rails-test:run-current-method)
+            (define-key map [menu-bar rails-controller-layout run] '("Test current method" . rails-test:run-current-method))
+            map))
 
-(provide 'rails-model-minor-mode)
+(provide 'rails-integration-test-minor-mode)
