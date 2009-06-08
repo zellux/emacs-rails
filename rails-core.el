@@ -703,7 +703,7 @@ the Rails minor mode log."
 					 (cdr menu))))))
 
 (defun rails-core:ido-menu (menu)
-  (let* ((prompt (car menu))
+  (let* ((prompt (car (car (cdr menu))))
          (mappings (cdr (car (cdr menu))))
          (choices (delete-if #'not (mapcar (lambda (item) (car item)) mappings)))
          (result (ido-completing-read prompt choices)))
