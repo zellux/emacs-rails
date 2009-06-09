@@ -313,7 +313,6 @@ rails-goto-file-on-current-line is run.")
   (rails-core:find-file (rails-core:model-file name)))
 
 (def-goto-line rails-line-->multi-association-model (("^[ \t]*\\(has_many\\|has_and_belongs_to_many\\)[ \t]*:\\([a-z0-9_]*\\)" (name 2)))
-  (message (singularize-string name))
   (rails-core:find-file (rails-core:model-file (singularize-string name))))
 
 (defvar rails-line-to-controller/action-keywords
