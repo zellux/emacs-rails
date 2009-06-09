@@ -93,7 +93,7 @@ will not append \".rb\" to result."
 (defun rails-core:find-file-if-exist (file-name)
   "Open the file named FILE-NAME in a Rails directory only if the file exists."
   (let ((file-name (rails-core:file file-name)))
-    (when (file-exists-p file-name)
+    (when (and file-name (file-exists-p file-name))
       (find-file file-name))))
 
 (defun rails-core:find-or-ask-to-create (question file)
