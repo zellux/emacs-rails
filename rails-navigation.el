@@ -229,12 +229,13 @@ current line for a series of patterns."
          (block ,name
            ,@(loop for (sexpr . map) in conditions
                    collect
-                   `(when (string-match ,sexpr ,line)
-                      (let ,(loop for var-acc in map collect
-                                  (if (listp var-acc)
+                   `(let ((case-fold-search nil))
+                      (when (string-match ,sexpr ,line)
+                        (let ,(loop for var-acc in map collect
+                                    (if (listp var-acc)
                                       `(,(first var-acc) (match-string ,(second var-acc) ,line))
-                                    var-acc))
-                        (return-from ,name (progn ,@body))))))))))
+                                      var-acc))
+                          (return-from ,name (progn ,@body)))))))))))
 
 (defun rails-goto-file-on-current-line (prefix)
   "Analyze a string (or ERb block) and open some file related with it.
@@ -271,7 +272,8 @@ Rules for actions/controllers:
     rails-line-->js
     rails-line-->association-model
     rails-line-->single-association-model
-    rails-line-->multi-association-model)
+    rails-line-->multi-association-model
+    rails-line-->class)
   "Functions that will be called to analyze the line when
 rails-goto-file-on-current-line is run.")
 
@@ -314,6 +316,11 @@ rails-goto-file-on-current-line is run.")
 
 (def-goto-line rails-line-->multi-association-model (("^[ \t]*\\(has_many\\|has_and_belongs_to_many\\)[ \t]*:\\([a-z0-9_]*\\)" (name 2)))
   (rails-core:find-file (rails-core:model-file (singularize-string name))))
+
+(def-goto-line rails-line-->class (("\\b\\(\\([A-Z][a-z]*\\)+\\)\\b" (name 1)))
+  (or (rails-core:find-file-if-exist (rails-core:model-file name))
+      (rails-core:find-file-if-exist (rails-core:controller-file name))
+      (rails-core:find-file-if-exist (rails-core:lib-file name))))
 
 (defvar rails-line-to-controller/action-keywords
   '("render" "redirect_to" "link_to" "form_tag" "start_form_tag" "render_component"
