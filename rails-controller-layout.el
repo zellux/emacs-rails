@@ -53,7 +53,7 @@
 
 (defun rails-controller-layout:toggle-action-view ()
   (interactive)
-  (let ((controller-name (rails-core:current-controller))
+  (let ((controller-name (or (rails-core:current-controller) (rails-core:current-mailer)))
         (action-name (rails-core:current-action)))
     (case (rails-core:buffer-type)
       (:view
