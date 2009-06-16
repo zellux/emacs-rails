@@ -122,7 +122,7 @@
 
   ([rails rails-customize] '("Customize" . (lambda () (interactive) (customize-group 'rails))))
   ([rails separator0] '("--"))
-  ([rails svn-status]        '("SVN Status"             . rails-svn-status-into-root))
+  ([rails scm-status]        '("SCM Status"             . rails-scm-status-into-root))
   ([rails api-doc]           '("Rails API Doc at Point" . rails-browse-api-at-point))
   ([rails sql]               '("SQL Rails Buffer"       . rails-run-sql))
   ([rails tag]               '("Update TAGS File"       . rails-create-tags))
@@ -323,7 +323,7 @@
   ((rails-key "<f1>")     'rails-browse-api)
   ((rails-key "/")        'rails-script:toggle-output-window)
 
-  ([f9]                  'rails-svn-status-into-root))
+  ([f9]                  'rails-scm-status-into-root))
 
 ;; Global keys and menubar
 

@@ -249,6 +249,19 @@ Emacs w3m browser."
   (rails-project:with-root (root)
                            (svn-status root)))
 
+(defun rails-git-status-into-root ()
+  (interactive)
+  (rails-project:with-root (root)
+                           (git-status root)))
+
+(defun rails-scm-status-into-root ()
+  (interactive)
+  (rails-project:with-root (root)
+                           (cond ((file-directory-p (expand-file-name ".git" root))
+                                  (rails-git-status-into-root))
+                                 ((file-directory-p (expand-file-name ".svn" root))
+                                  (rails-svn-status-into-root)))))
+
 ;; helper functions/macros
 
 (defun backward-ruby-object ()
