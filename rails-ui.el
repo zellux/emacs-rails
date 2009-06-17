@@ -288,6 +288,8 @@
   ((rails-key "\C-c d m") 'rails-rake:migrate)
   ((rails-key "\C-c d v") 'rails-rake:migrate-to-version)
   ((rails-key "\C-c d p") 'rails-rake:migrate-to-prev-version)
+  ((rails-key "\C-c d u") 'rails-rake:migration-version-up)
+  ((rails-key "\C-c d d") 'rails-rake:migration-version-down)
   ((rails-key "\C-c d t") 'rails-rake:clone-development-db-to-test-db)
 
   ;; Tests
