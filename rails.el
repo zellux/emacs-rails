@@ -39,6 +39,7 @@
   (require 'ruby-mode)
   (require 'ruby-electric))
 
+(require 'grep)
 (require 'sql)
 (require 'ansi-color)
 (require 'etags)
@@ -224,6 +225,11 @@ Emacs w3m browser."
   :group 'rails
   :type '(repeat string))
 
+(defcustom rails-grep-extensions '("builder" "erb" "haml" "liquid" "mab" "rake" "rb" "rhtml" "rjs" "rxml" "yml")
+  "List of file extensions which grep searches."
+  :group 'rails
+  :type '(repeat string))
+
 (defvar rails-error-regexp-alist
   '(
     (" /?\\(app/[a-z0-9._/]*\\):\\([0-9]+\\)" 1 2)
@@ -324,6 +330,12 @@ Emacs w3m browser."
          (merge-abbrev-tables
           (symbol-value (intern minor-mode-abbrev))
           local-abbrev-table))))))
+
+(defun rails-grep-project (regexp)
+  "Find regexp in project."
+  (interactive (progn (grep-compute-defaults)
+                      (list (grep-read-regexp))))
+  (rgrep regexp (mapconcat (lambda (ext) (format "*.%s" ext)) rails-grep-extensions " ") (rails-project:root)))
 
 ;;;;;;;;;; Database integration ;;;;;;;;;;
 

@@ -325,6 +325,8 @@
   ((rails-key "<f1>")     'rails-browse-api)
   ((rails-key "/")        'rails-script:toggle-output-window)
 
+  ;; Other
+  ((rails-key "s")       'rails-grep-project)
   ([f9]                  'rails-scm-status-into-root))
 
 ;; Global keys and menubar
