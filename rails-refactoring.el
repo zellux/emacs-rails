@@ -32,10 +32,16 @@
       (when buffer (kill-buffer buffer)))
     (find-file (rails-core:file to-file))
     (goto-char (point-min))
-    (if (re-search-forward (concat "^\\(class\\|module\\)[ \t]+" from) nil t)
-      (replace-match (concat "\\1 " to) nil nil)
-      (error "failed find class definition for renaming")))
-    (save-buffer))
+    (while (re-search-forward (concat "^\\(class\\|module\\)[ \t]+" from) nil t)
+      (replace-match (concat "\\1 " to) nil nil))
+    (save-buffer)))
+  
+(defun rails-refactoring:query-replace (from to &rest types)
+  (tags-query-replace (downcase from) (downcase to) nil
+                      (cons 'list
+                            (delete-if (lambda (file) (not (file-exists-p file))) 
+                                       (mapcar (lambda (type) (rails-core:file
+                                                               (rails-refactoring:file to type))) types)))))
 
 (defun rails-refactoring:controller-names ()
   (mapcar (lambda (name) (remove-postfix name "Controller")) (rails-core:controllers)))
@@ -85,8 +91,9 @@
 
   (error "should rename layout")
 
+  (rails-refactoring:query-replace from to :controller :functional-test :helper :helper-test)
+
   (error "should query replace references to controller class")
   (error "should query replace references to controller in routing")
   (error "should query replace references to helper and includes of class name")
   (error "should query replace render partial / template"))
-  
