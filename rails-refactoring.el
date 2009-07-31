@@ -1,3 +1,30 @@
+(defun directory-files-recursive (dirname &optional pred base)
+  (apply #'append
+         (mapcar (lambda (file)
+                   (cond ((and (file-regular-p (concat dirname "/" file))
+                               (funcall pred file))
+                          (list (concat base file)))
+                         ((and (file-directory-p (concat dirname "/" file))
+                               (not (string-match "^\\." file)))
+                          (directory-files-recursive (concat dirname "/" file) (or pred #'identity) (concat base file "/")))))
+                 (directory-files dirname))))
+
+(defcustom rails-refactoring-source-extensions '("builder" "erb" "haml" "liquid" "mab" "rake" "rb" "rhtml" "rjs" "rxml" "yml")
+  "List of file extensions for refactoring search and replace operations."
+  :group 'rails
+  :type '(repeat string))
+
+(defun rails-refactoring:source-file-p (name)
+  (find-if (lambda (ext) (string-match (concat "\\." ext "$") name))
+           rails-refactoring-source-extensions))
+
+(defun rails-refactoring:source-files ()
+  (apply #'append
+         (mapcar (lambda (dirname) (directory-files-recursive (rails-core:file dirname)
+                                                              #'rails-refactoring:source-file-p
+                                                              dirname))
+                 '("app/" "config/" "lib/"))))
+
 (defun rails-refactoring:file (class &optional type)
   (cond ((eq type :controller)
          (rails-core:controller-file class))
