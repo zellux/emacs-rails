@@ -20,10 +20,12 @@
 
 (defun rails-refactoring:source-files ()
   (apply #'append
-         (mapcar (lambda (dirname) (directory-files-recursive (rails-core:file dirname)
-                                                              #'rails-refactoring:source-file-p
-                                                              dirname))
-                 '("app/" "config/" "lib/"))))
+         (mapcar (lambda (dirname)
+                   (delete-if (lambda (file) (string-match "_flymake.rb" file))
+                              (directory-files-recursive (rails-core:file dirname)
+                                                         #'rails-refactoring:source-file-p
+                                                         dirname)))
+                 '("app/" "config/" "lib/" "test/"))))
 
 (defun rails-refactoring:file (class &optional type)
   (cond ((eq type :controller)
@@ -63,23 +65,15 @@
       (replace-match (concat "\\1 " to) nil nil))
     (save-buffer)))
   
-(defun rails-refactoring:query-replace (from to &rest types)
-  (tags-query-replace (downcase from) (downcase to) nil
+(defun rails-refactoring:query-replace (from to)
+  (tags-query-replace from to nil
                       (cons 'list
-                            (delete-if (lambda (file) (not (file-exists-p file))) 
-                                       (mapcar (lambda (type) (rails-core:file
-                                                               (rails-refactoring:file to type))) types)))))
-
-(defun rails-refactoring:controller-names ()
-  (mapcar (lambda (name) (remove-postfix name "Controller")) (rails-core:controllers)))
-
-(defun rails-refactoring:current-controller-or-nil ()
-  (condition-case nil (rails-core:current-controller) (error nil)))
+                            (mapcar #'rails-core:file (rails-refactoring:source-files)))))  
 
 (defun rails-refactoring:rename-controller (from to)
   (interactive (let* ((from (completing-read "Rename controller: "
-                                             (rails-refactoring:controller-names) nil t
-                                             (rails-refactoring:current-controller-or-nil)))
+                                             (mapcar (lambda (name) (remove-postfix name "Controller")) (rails-core:controllers)) nil t
+                                             (ignore-errors (rails-core:current-controller))))
                       (to (read-string "To: ")))
                  (list from to)))
 
@@ -116,11 +110,7 @@
     (message "refactoring helper test class file")
     (rails-refactoring:rename-class from to :helper-test))
 
-  (error "should rename layout")
+  (ignore-errors (rails-refactoring:query-replace from to))
+  (ignore-errors (rails-refactoring:query-replace (decamelize from) (decamelize to)))
 
-  (rails-refactoring:query-replace from to :controller :functional-test :helper :helper-test)
-
-  (error "should query replace references to controller class")
-  (error "should query replace references to controller in routing")
-  (error "should query replace references to helper and includes of class name")
-  (error "should query replace render partial / template"))
+  (error "should rename layout"))
