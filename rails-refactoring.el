@@ -1,13 +1,14 @@
 (defun directory-files-recursive (dirname &optional pred base)
-  (apply #'append
-         (mapcar (lambda (file)
-                   (cond ((and (file-regular-p (concat dirname "/" file))
-                               (funcall pred file))
-                          (list (concat base file)))
-                         ((and (file-directory-p (concat dirname "/" file))
-                               (not (string-match "^\\." file)))
-                          (directory-files-recursive (concat dirname "/" file) (or pred #'identity) (concat base file "/")))))
-                 (directory-files dirname))))
+  (let ((pred (or pred #'identity)))
+    (apply #'append
+           (mapcar (lambda (file)
+                     (cond ((and (file-regular-p (concat dirname "/" file))
+                                 (funcall pred file))
+                            (list (concat base file)))
+                           ((and (file-directory-p (concat dirname "/" file))
+                                 (not (string-match "^\\." file)))
+                            (directory-files-recursive (concat dirname "/" file) pred (concat base file "/")))))
+                   (directory-files dirname)))))
 
 (defcustom rails-refactoring-source-extensions '("builder" "erb" "haml" "liquid" "mab" "rake" "rb" "rhtml" "rjs" "rxml" "yml")
   "List of file extensions for refactoring search and replace operations."
@@ -70,6 +71,14 @@
                       (cons 'list
                             (mapcar #'rails-core:file (rails-refactoring:source-files)))))  
 
+(defun rails-refactoring:rename-layout (from to)
+  (mapc (lambda (from-file)
+          (let ((to-file (concat to (substring from-file (length from)))))
+            (message "renaming layout from %s to %s" from-file to-file)
+            (rename-file (rails-core:file (format "app/views/layouts/%s" from-file))
+                         (rails-core:file (format "app/views/layouts/%s" to-file)))))
+        (directory-files-recursive (rails-core:file "app/views/layouts") (lambda (file) (string= from (substring file 0 (length from)))))))
+
 (defun rails-refactoring:rename-controller (from to)
   (interactive (let* ((from (completing-read "Rename controller: "
                                              (mapcar (lambda (name) (remove-postfix name "Controller")) (rails-core:controllers)) nil t
@@ -110,7 +119,9 @@
     (message "refactoring helper test class file")
     (rails-refactoring:rename-class from to :helper-test))
 
+  (rails-refactoring:rename-layout (decamelize from) (decamelize to))
+
   (ignore-errors (rails-refactoring:query-replace from to))
   (ignore-errors (rails-refactoring:query-replace (decamelize from) (decamelize to)))
 
-  (error "should rename layout"))
+  (save-some-buffers))
