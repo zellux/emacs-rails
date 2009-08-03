@@ -1,14 +1,20 @@
-(defun directory-files-recursive (dirname &optional pred base)
-  (let ((pred (or pred #'identity)))
-    (apply #'append
-           (mapcar (lambda (file)
-                     (cond ((and (file-regular-p (concat dirname "/" file))
-                                 (funcall pred file))
-                            (list (concat base file)))
-                           ((and (file-directory-p (concat dirname "/" file))
-                                 (not (string-match "^\\." file)))
-                            (directory-files-recursive (concat dirname "/" file) pred (concat base file "/")))))
-                   (directory-files dirname)))))
+(defun directory-files-recursive (dirname &optional base)
+  "Return a list of names of files in directory named by
+DIRNAME. If the directory contains directories these are
+traversed recursively.  The returned list of file names are
+relative to DIRNAME and only includes regular files.
+
+If BASE is provided, it is interpreted as a subdirectory to
+traverse.  This subdirectory is included the returned file
+names."
+  (apply #'append
+         (mapcar (lambda (file)
+                   (cond ((file-regular-p (concat dirname "/" file))
+                          (list (concat base file)))
+                         ((and (file-directory-p (concat dirname "/" file))
+                               (not (string-match "^\\." file)))
+                          (directory-files-recursive (concat dirname "/" file) (concat base file "/")))))
+                 (directory-files dirname))))
 
 (defcustom rails-refactoring-source-extensions '("builder" "erb" "haml" "liquid" "mab" "rake" "rb" "rhtml" "rjs" "rxml" "yml")
   "List of file extensions for refactoring search and replace operations."
@@ -16,19 +22,29 @@
   :type '(repeat string))
 
 (defun rails-refactoring:source-file-p (name)
+  "Test if file has extension from `rails-refactoring-source-extensions'."
   (find-if (lambda (ext) (string-match (concat "\\." ext "$") name))
            rails-refactoring-source-extensions))
 
 (defun rails-refactoring:source-files ()
+  "Return a list of all the source files in the current rails
+project.  This includes all the files in the 'app', 'config',
+'lib' and 'test' directories."
   (apply #'append
          (mapcar (lambda (dirname)
                    (delete-if (lambda (file) (string-match "_flymake.rb" file))
-                              (directory-files-recursive (rails-core:file dirname)
-                                                         #'rails-refactoring:source-file-p
-                                                         dirname)))
+                              (delete-if-not 'rails-refactoring:source-file-p
+                                             (directory-files-recursive (rails-core:file dirname) dirname))))
                  '("app/" "config/" "lib/" "test/"))))
 
 (defun rails-refactoring:file (class &optional type)
+  "Return file name of CLASS of a given type in the current
+rails project.  The TYPE arguments describes the type of
+class.
+
+Example: (rails-refactoring:file \"Foo\" :controller)
+Returns: \"app/controllers/foo_controller.rb\""
+
   (cond ((eq type :controller)
          (rails-core:controller-file class))
 
@@ -47,9 +63,13 @@
         (t (error "not yet implemented type %s" type))))
 
 (defun rails-refactoring:file-exists-p (class &optional type)
+  "Return t if file associated with CLASS (and TYPE) exists."
   (file-exists-p (rails-core:file (rails-refactoring:file class type))))
 
 (defun rails-refactoring:rename-class (from to &optional type)
+  "Rename class from FROM to TO where TO and FROM and
+shortnames like the ones used by `rails-refactoring:file'.  The
+file is renamed and the class or module definition is modified."
   (let ((from-file (rails-refactoring:file from type))
         (to-file (rails-refactoring:file to type)))
     (message "rename file from %s to %s" from-file to-file)
@@ -67,11 +87,12 @@
     (save-buffer)))
   
 (defun rails-refactoring:query-replace (from to)
+  "Replace some occurrences of FROM to TO in all the project source files."
   (tags-query-replace from to nil
-                      (cons 'list
-                            (mapcar #'rails-core:file (rails-refactoring:source-files)))))  
+                      (cons 'list (mapcar #'rails-core:file (rails-refactoring:source-files)))))  
 
 (defun rails-refactoring:rename-layout (from to)
+  "Rename all named layouts from FROM to TO."
   (mapc (lambda (from-file)
           (let ((to-file (concat to (substring from-file (length from)))))
             (message "renaming layout from %s to %s" from-file to-file)
@@ -80,6 +101,9 @@
         (directory-files-recursive (rails-core:file "app/views/layouts") (lambda (file) (string= from (substring file 0 (length from)))))))
 
 (defun rails-refactoring:rename-controller (from to)
+  "Rename controller from FROM to TO.  All appropriate files and
+directories are renamed and `rails-refactoring:query-replace' is
+started to do the rest."
   (interactive (let* ((from (completing-read "Rename controller: "
                                              (mapcar (lambda (name) (remove-postfix name "Controller")) (rails-core:controllers)) nil t
                                              (ignore-errors (rails-core:current-controller))))
