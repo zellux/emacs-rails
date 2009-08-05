@@ -152,6 +152,13 @@ not include templating file extension."
                      (directory-files-recursive (rails-core:file "app/views/layouts")))
         name))))
 
+(defmacro rails-refactoring:disclaim (name)
+  `(when (interactive-p)
+     (when (not (y-or-n-p (concat "Warning! " ,name " can not be undone! Are you sure you want to continue? ")))
+       (error "cancelled"))
+     (save-some-buffers)))
+
+
 ;; Refactoring methods
 
 (defun rails-refactoring:rename-class (from to &optional type)
@@ -164,6 +171,8 @@ file is renamed and the class or module definition is modified."
                                             (rails-refactoring:current-class)))
                      (to (read-string "To: ")))
                  (list from to (cdr (assoc from (rails-refactoring:classes-alist))))))
+
+  (rails-refactoring:disclaim "Rename class")
 
   (let ((from-file (rails-refactoring:file from type))
         (to-file (rails-refactoring:file to type)))
@@ -188,6 +197,7 @@ file is renamed and the class or module definition is modified."
 (defun rails-refactoring:query-replace (from to)
   "Replace some occurrences of FROM to TO in all the project source files."
   (interactive "sFrom: \nsTo: ")
+
   (tags-query-replace from to nil
                       (cons 'list (mapcar #'rails-core:file (rails-refactoring:source-files)))))  
 
@@ -198,6 +208,9 @@ file is renamed and the class or module definition is modified."
                                       nil t
                                       (rails-refactoring:current-layout))
                      (read-string "To: ")))
+
+  (rails-refactoring:disclaim "Rename layout")
+
   (mapc (lambda (from-file)
           (let ((to-file (concat to (substring from-file (length from)))))
             (message "renaming layout from %s to %s" from-file to-file)
@@ -219,7 +232,7 @@ started to do the rest."
                                       (ignore-errors (rails-core:current-controller)))
                      (read-string "To: ")))
 
-  (save-some-buffers)
+  (rails-refactoring:disclaim "Rename controller")
 
   (unless (rails-core:controller-exist-p from)
     (error "controller '%s' doesn't exists" from))
