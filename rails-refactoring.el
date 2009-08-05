@@ -133,6 +133,25 @@ is determine according to the file name associated with this
 buffer"
   (caar (rails-refactoring:classes-alist (list (replace-regexp-in-string (rails-project:root) "" (buffer-file-name))))))
 
+(defun rails-refactoring:layouts ()
+  "Return list of layouts.  This list not include templating file
+extensions."
+  (let ((layouts nil))
+    (mapc (lambda (file)
+            (unless (string-match "^_" file)
+              (add-to-list 'layouts (replace-regexp-in-string "\\..*$" "" file))))
+          (directory-files-recursive (rails-core:file "app/views/layouts")))
+    layouts))
+
+(defun rails-refactoring:current-layout ()
+  "Return name of current layout or nil.  The layout name does
+not include templating file extension."
+  (ignore-errors
+    (let ((name (rails-refactoring:decamelize (rails-core:current-controller))))
+      (when (find-if (lambda (file) (string-match (concat "^" name) file))
+                     (directory-files-recursive (rails-core:file "app/views/layouts")))
+        name))))
+
 ;; Refactoring methods
 
 (defun rails-refactoring:rename-class (from to &optional type)
@@ -140,9 +159,9 @@ buffer"
 shortnames like the ones used by `rails-refactoring:file'.  The
 file is renamed and the class or module definition is modified."
   (interactive (let ((from (completing-read "Rename class: "
-                                             (mapcar 'car (rails-refactoring:classes-alist))
-                                             nil t
-                                             (rails-refactoring:current-class)))
+                                            (mapcar 'car (rails-refactoring:classes-alist))
+                                            nil t
+                                            (rails-refactoring:current-class)))
                      (to (read-string "To: ")))
                  (list from to (cdr (assoc from (rails-refactoring:classes-alist))))))
 
@@ -174,13 +193,21 @@ file is renamed and the class or module definition is modified."
 
 (defun rails-refactoring:rename-layout (from to)
   "Rename all named layouts from FROM to TO."
+  (interactive (list (completing-read "From: "
+                                      (rails-refactoring:layouts)
+                                      nil t
+                                      (rails-refactoring:current-layout))
+                     (read-string "To: ")))
   (mapc (lambda (from-file)
           (let ((to-file (concat to (substring from-file (length from)))))
             (message "renaming layout from %s to %s" from-file to-file)
             (rename-file (rails-core:file (format "app/views/layouts/%s" from-file))
                          (rails-core:file (format "app/views/layouts/%s" to-file)))))
         (delete-if-not (lambda (file) (string= from (substring file 0 (length from))))
-                       (directory-files-recursive (rails-core:file "app/views/layouts")))))
+                       (directory-files-recursive (rails-core:file "app/views/layouts"))))
+  (when (interactive-p)
+    (ignore-errors (rails-refactoring:query-replace from to))
+    (save-some-buffers)))
 
 (defun rails-refactoring:rename-controller (from to)
   "Rename controller from FROM to TO.  All appropriate files and
