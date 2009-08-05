@@ -53,6 +53,11 @@ names."
                           (directory-files-recursive (concat dirname "/" file) (concat base file "/")))))
                  (directory-files dirname))))
 
+(defun rails-refactoring:decamelize (name)
+  "Translate Ruby class name to corresponding file name."
+  (replace-regexp-in-string "::" "/" (decamelize name)))
+(assert (string= "foo_bar/quux" (rails-refactoring:decamelize "FooBar::Quux")))
+
 (defun rails-refactoring:source-file-p (name)
   "Test if file has extension from `rails-refactoring-source-extensions'."
   (find-if (lambda (ext) (string-match (concat "\\." ext "$") name))
@@ -156,7 +161,7 @@ started to do the rest."
   (let ((file (find-if (lambda (file) (and file (file-exists-p (rails-core:file file))))
                        (append (mapcar (lambda (fn) (funcall fn to))
                                        '(rails-core:controller-file rails-core:helper-file rails-core:views-dir))
-                               (list (rails-core:layout-file (decamelize to)))))))
+                               (list (rails-core:layout-file (rails-refactoring:decamelize to)))))))
     (when file (error "file '%s' already exists" file)))
 
   (message "refactoring controller class file")
@@ -180,10 +185,10 @@ started to do the rest."
     (message "refactoring helper test class file")
     (rails-refactoring:rename-class from to :helper-test))
 
-  (rails-refactoring:rename-layout (decamelize from) (decamelize to))
+  (rails-refactoring:rename-layout (rails-refactoring:decamelize from) (rails-refactoring:decamelize to))
 
   (ignore-errors (rails-refactoring:query-replace from to))
-  (ignore-errors (rails-refactoring:query-replace (decamelize from) (decamelize to)))
+  (ignore-errors (rails-refactoring:query-replace (rails-refactoring:decamelize from) (rails-refactoring:decamelize to)))
 
   (save-some-buffers))
 
