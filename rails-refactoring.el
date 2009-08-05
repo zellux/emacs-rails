@@ -88,6 +88,7 @@ file is renamed and the class or module definition is modified."
   
 (defun rails-refactoring:query-replace (from to)
   "Replace some occurrences of FROM to TO in all the project source files."
+  (interactive "sFrom: \nsTo: ")
   (tags-query-replace from to nil
                       (cons 'list (mapcar #'rails-core:file (rails-refactoring:source-files)))))  
 
