@@ -24,6 +24,17 @@
 (require 'cl)
 (require 'rails-core)
 
+
+;; Customizations
+
+(defcustom rails-refactoring-source-extensions '("builder" "erb" "haml" "liquid" "mab" "rake" "rb" "rhtml" "rjs" "rxml" "yml")
+  "List of file extensions for refactoring search and replace operations."
+  :group 'rails
+  :type '(repeat string))
+
+
+;; Helper functions
+
 (defun directory-files-recursive (dirname &optional base)
   "Return a list of names of files in directory named by
 DIRNAME. If the directory contains directories these are
@@ -41,11 +52,6 @@ names."
                                (not (string-match "^\\." file)))
                           (directory-files-recursive (concat dirname "/" file) (concat base file "/")))))
                  (directory-files dirname))))
-
-(defcustom rails-refactoring-source-extensions '("builder" "erb" "haml" "liquid" "mab" "rake" "rb" "rhtml" "rjs" "rxml" "yml")
-  "List of file extensions for refactoring search and replace operations."
-  :group 'rails
-  :type '(repeat string))
 
 (defun rails-refactoring:source-file-p (name)
   "Test if file has extension from `rails-refactoring-source-extensions'."
@@ -91,6 +97,9 @@ Returns: \"app/controllers/foo_controller.rb\""
 (defun rails-refactoring:file-exists-p (class &optional type)
   "Return t if file associated with CLASS (and TYPE) exists."
   (file-exists-p (rails-core:file (rails-refactoring:file class type))))
+
+
+;; Refactoring methods
 
 (defun rails-refactoring:rename-class (from to &optional type)
   "Rename class from FROM to TO where TO and FROM and
@@ -177,5 +186,14 @@ started to do the rest."
   (ignore-errors (rails-refactoring:query-replace (decamelize from) (decamelize to)))
 
   (save-some-buffers))
+
+
+;; Tie up in UI
+
+(require 'rails-ui)
+
+(define-keys rails-minor-mode-map
+  ((rails-key "\C-c R c") 'rails-refactoring:rename-controller))
+
 
 (provide 'rails-refactoring)
