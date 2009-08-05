@@ -108,7 +108,7 @@ Returns: \"app/controllers/foo_controller.rb\""
 
   (cond ((eq type :model)
          (or (rails-core:model-file class)
-             (rails-core:file (concat "app/models/" (rails-refactoring:decamelize class)))))
+             (rails-core:file (concat "app/models/" (rails-refactoring:decamelize class) ".rb"))))
         ((eq type :controller)
          (rails-core:controller-file class))
         ((eq type :functional-test)
@@ -213,12 +213,11 @@ file is renamed and the class or module definition is modified."
   "Rename controller from FROM to TO.  All appropriate files and
 directories are renamed and `rails-refactoring:query-replace' is
 started to do the rest."
-  (interactive (let ((from (completing-read "Rename controller: "
-                                            (mapcar (lambda (name) (remove-postfix name "Controller")) (rails-core:controllers))
-                                            nil t
-                                            (ignore-errors (rails-core:current-controller))))
-                     (to (read-string "To: ")))
-                 (list from to)))
+  (interactive (list (completing-read "Rename controller: "
+                                      (mapcar (lambda (name) (remove-postfix name "Controller")) (rails-core:controllers))
+                                      nil t
+                                      (ignore-errors (rails-core:current-controller)))
+                     (read-string "To: ")))
 
   (save-some-buffers)
 
