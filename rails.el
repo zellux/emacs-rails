@@ -81,7 +81,7 @@
 (require 'rails-lib-layout)
 (require 'rails-spec)
 (require 'rails-shoulda)
-
+(require 'rails-refactoring)
 
 ;;;;;;;;;; Variable definition ;;;;;;;;;;
 
