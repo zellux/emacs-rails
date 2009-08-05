@@ -125,7 +125,8 @@ file is renamed and the class or module definition is modified."
             (message "renaming layout from %s to %s" from-file to-file)
             (rename-file (rails-core:file (format "app/views/layouts/%s" from-file))
                          (rails-core:file (format "app/views/layouts/%s" to-file)))))
-        (directory-files-recursive (rails-core:file "app/views/layouts") (lambda (file) (string= from (substring file 0 (length from)))))))
+        (delete-if-not (lambda (file) (string= from (substring file 0 (length from))))
+                       (directory-files-recursive (rails-core:file "app/views/layouts")))))
 
 (defun rails-refactoring:rename-controller (from to)
   "Rename controller from FROM to TO.  All appropriate files and
