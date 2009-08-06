@@ -51,7 +51,7 @@ names."
                          ((and (file-directory-p (concat dirname "/" file))
                                (not (string-match "^\\." file)))
                           (directory-files-recursive (concat dirname "/" file) (concat base file "/")))))
-                 (directory-files dirname))))
+                 (ignore-errors (directory-files dirname)))))
 
 (defun rails-refactoring:decamelize (name)
   "Translate Ruby class name to corresponding file name."
