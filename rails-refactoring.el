@@ -53,9 +53,16 @@ names."
                           (directory-files-recursive (concat dirname "/" file) (concat base file "/")))))
                  (ignore-errors (directory-files dirname)))))
 
+(defmacro rails-refactoring:disclaim (name)
+  `(when (interactive-p)
+     (when (not (y-or-n-p (concat "Warning! " ,name " can not be undone! Are you sure you want to continue? ")))
+       (error "cancelled"))
+     (save-some-buffers)))
+
 (defun rails-refactoring:decamelize (name)
   "Translate Ruby class name to corresponding file name."
   (replace-regexp-in-string "::" "/" (decamelize name)))
+
 (assert (string= "foo_bar/quux" (rails-refactoring:decamelize "FooBar::Quux")))
 
 (defun rails-refactoring:camelize (name)
@@ -64,6 +71,7 @@ names."
                             (replace-regexp-in-string "_\\([a-z]\\)" (lambda (match)
                                                                        (upcase (substring match 1)))
                                                       (capitalize name))))
+
 (assert (string= "FooBar::Quux" (rails-refactoring:camelize "foo_bar/quux")))
 
 (defun rails-refactoring:source-file-p (name)
@@ -82,108 +90,45 @@ project.  This includes all the files in the 'app', 'config',
                                              (directory-files-recursive (rails-core:file dirname) dirname))))
                  '("app/" "config/" "lib/" "test/" "spec/"))))
 
-(defun rails-refactoring:classes-alist (&optional source-files)
-  "Return a list of all class names and their type in the current
-rails project."
-  (let ((files (or source-files (rails-refactoring:source-files))))
-    (delete-if-not 'identity
-                   (mapcar (lambda (file)
-                             (cond ((string-match "^app/models/\\(.*\\)\\.rb$" file)
-                                    (cons (rails-refactoring:camelize (match-string 1 file)) :model))
-                                   ((string-match "^app/controllers/\\(.*\\)\\.rb$" file)
-                                    (cons (rails-refactoring:camelize (match-string 1 file)) :controller))
-                                   ((string-match "^app/helpers/\\(.*\\)\\.rb$" file)
-                                    (cons (rails-refactoring:camelize (match-string 1 file)) :helper))
-                                   ((string-match "^lib/\\(.*\\)\\.rb$" file)
-                                    (cons (rails-refactoring:camelize (match-string 1 file)) :lib))))
-                           files))))
- 
-(defun rails-refactoring:file (class &optional type)
-  "Return file name of CLASS of a given type in the current
-rails project.  The TYPE arguments describes the type of
-class.
+(defun rails-refactoring:class-files ()
+  "Return list of all Ruby class files."
+  (delete-if-not (lambda (file) (string-match "\\.rb$" file)) (rails-refactoring:source-files)))
 
-Example: (rails-refactoring:file \"Foo\" :controller)
-Returns: \"app/controllers/foo_controller.rb\""
+(defun rails-refactoring:class-from-file (file)
+  "Return corresponding class/module name for given FILE."
+  (let ((path (find-if (lambda (path) (string-match (concat "^" (regexp-quote path)) file))
+                       '("app/models/" "app/controllers/" "app/helpers/" "lib/"
+                         "test/unit/helpers/" "test/unit/" "test/functional/"
+                         "spec/models/" "spec/controllers/" "spec/helpers/ spec/lib/"))))
+    (when path
+      (rails-refactoring:camelize
+       (replace-regexp-in-string path "" (replace-regexp-in-string "\\.rb$" "" file))))))
 
-  (cond ((eq type :model)
-         (or (rails-core:model-file class)
-             (rails-core:file (concat "app/models/" (rails-refactoring:decamelize class) ".rb"))))
-        ((eq type :unit-test)
-         (format "test/unit/%s" (rails-core:file-by-class (concat class "Test"))))
-        ((eq type :rspec-model)
-         (rails-core:rspec-model-file class))
-        ((eq type :controller)
-         (rails-core:controller-file class))
-        ((eq type :functional-test)
-         (rails-core:functional-test-file class))
-        ((eq type :rspec-controller)
-         (rails-core:rspec-controller-file class))
-        ((eq type :helper)
-         (rails-core:helper-file class))
-        ((eq type :helper-test)
-         (format "test/unit/helper/%s" (rails-core:file-by-class (concat class "HelperTest"))))
-        ((eq type :views-dir)
-         (rails-core:views-dir class))
-        ((eq type :lib)
-         (rails-core:lib-file class))
-        ((eq type :rspec-lib)
-         (rails-core:rspec-lib-file class))
-        (t (error "not yet implemented type %s" type))))
-
-(defun rails-refactoring:file-exists-p (class &optional type)
-  "Return t if file associated with CLASS (and TYPE) exists."
-  (file-exists-p (rails-core:file (rails-refactoring:file class type))))
-
-(defun rails-refactoring:current-class ()
-  "Return name of the class in the current buffer or nil.  This
-is determine according to the file name associated with this
-buffer"
-  (caar (rails-refactoring:classes-alist (list (replace-regexp-in-string (rails-project:root) "" (buffer-file-name))))))
-
-(defun rails-refactoring:layouts ()
-  "Return list of layouts.  This list not include templating file
-extensions."
-  (let ((layouts nil))
-    (mapc (lambda (file)
-            (unless (string-match "^_" file)
-              (add-to-list 'layouts (replace-regexp-in-string "\\..*$" "" file))))
-          (directory-files-recursive (rails-core:file "app/views/layouts")))
-    layouts))
-
-(defun rails-refactoring:current-layout ()
-  "Return name of current layout or nil.  The layout name does
-not include templating file extension."
-  (ignore-errors
-    (let ((name (rails-refactoring:decamelize (rails-core:current-controller))))
-      (when (find-if (lambda (file) (string-match (concat "^" name) file))
-                     (directory-files-recursive (rails-core:file "app/views/layouts")))
-        name))))
-
-(defmacro rails-refactoring:disclaim (name)
-  `(when (interactive-p)
-     (when (not (y-or-n-p (concat "Warning! " ,name " can not be undone! Are you sure you want to continue? ")))
-       (error "cancelled"))
-     (save-some-buffers)))
+(assert (string= "FooBar" (rails-refactoring:class-from-file "app/models/foo_bar.rb")))
+(assert (string= "Foo::BarController" (rails-refactoring:class-from-file "app/controllers/foo/bar_controller.rb")))
+(assert (string= "Foo::Bar::Quux" (rails-refactoring:class-from-file "lib/foo/bar/quux.rb")))
+(assert (string= "FooTest" (rails-refactoring:class-from-file "test/unit/foo_test.rb")))
+(assert (string= "FooHelperTest" (rails-refactoring:class-from-file "test/unit/helpers/foo_helper_test.rb")))
 
 
 ;; Refactoring methods
 
-(defun rails-refactoring:rename-class (from to &optional type)
-  "Rename class from FROM to TO where TO and FROM and
-shortnames like the ones used by `rails-refactoring:file'.  The
-file is renamed and the class or module definition is modified."
-  (interactive (let ((from (completing-read "Rename class: "
-                                            (mapcar 'car (rails-refactoring:classes-alist))
-                                            nil t
-                                            (rails-refactoring:current-class)))
-                     (to (read-string "To: ")))
-                 (list from to (cdr (assoc from (rails-refactoring:classes-alist))))))
+(defun rails-refactoring:query-replace (from to)
+  "Replace some occurrences of FROM to TO in all the project source files."
+  (interactive "sFrom: \nsTo: ")
+  (tags-query-replace from to nil
+                      (cons 'list (mapcar #'rails-core:file (rails-refactoring:source-files)))))  
 
+(defun rails-refactoring:rename-class (from-file to-file)
+  "Rename class given their file names; FROM-FILE to TO-FILE.
+The file is renamed and the class or module definition is
+modified."
+  (interactive (list (completing-read "From: " (rails-refactoring:class-files) nil t)
+                     (read-string "To: ")))
   (rails-refactoring:disclaim "Rename class")
 
-  (let ((from-file (rails-refactoring:file from type))
-        (to-file (rails-refactoring:file to type)))
+  (let ((from (rails-refactoring:class-from-file from-file))
+        (to (rails-refactoring:class-from-file to-file)))
     (message "rename file from %s to %s" from-file to-file)
     (rename-file (rails-core:file from-file) (rails-core:file to-file))
     (let ((buffer (get-file-buffer (rails-core:file from-file))))
@@ -202,21 +147,10 @@ file is renamed and the class or module definition is modified."
     (ignore-errors (rails-refactoring:query-replace from to))
     (save-some-buffers)))
 
-(defun rails-refactoring:query-replace (from to)
-  "Replace some occurrences of FROM to TO in all the project source files."
-  (interactive "sFrom: \nsTo: ")
-
-  (tags-query-replace from to nil
-                      (cons 'list (mapcar #'rails-core:file (rails-refactoring:source-files)))))  
-
 (defun rails-refactoring:rename-layout (from to)
   "Rename all named layouts from FROM to TO."
-  (interactive (list (completing-read "From: "
-                                      (rails-refactoring:layouts)
-                                      nil t
-                                      (rails-refactoring:current-layout))
+  (interactive (list (completing-read "From: " (rails-refactoring:layouts) nil t)
                      (read-string "To: ")))
-
   (rails-refactoring:disclaim "Rename layout")
 
   (mapc (lambda (from-file)
@@ -227,7 +161,8 @@ file is renamed and the class or module definition is modified."
         (delete-if-not (lambda (file) (string-match (concat "^" (regexp-quote from) "\\.") file))
                        (directory-files-recursive (rails-core:file "app/views/layouts"))))
   (when (interactive-p)
-    (ignore-errors (rails-refactoring:query-replace from to))
+    (let ((case-fold-search nil))
+      (ignore-errors (rails-refactoring:query-replace from to)))
     (save-some-buffers)))
 
 (defun rails-refactoring:rename-controller (from to)
@@ -239,49 +174,29 @@ started to do the rest."
                                       nil t
                                       (ignore-errors (rails-core:current-controller)))
                      (read-string "To: ")))
-
   (rails-refactoring:disclaim "Rename controller")
 
-  (unless (rails-core:controller-exist-p from)
-    (error "controller '%s' doesn't exists" from))
+  (mapc (lambda (func)
+          (when (file-exists-p (rails-core:file (funcall func from)))
+            (rails-refactoring:rename-class (funcall func from)
+                                            (funcall func to))))
+        '(rails-core:controller-file rails-core:functional-test-file rails-core:rspec-controller-file
+                                     rails-core:helper-file rails-core:helper-test-file))
 
-  ;; ensure no existing file are in the way
-  (let ((file (find-if (lambda (file) (and file (file-exists-p (rails-core:file file))))
-                       (append (mapcar (lambda (fn) (funcall fn to))
-                                       '(rails-core:controller-file rails-core:helper-file rails-core:views-dir))
-                               (list (rails-core:layout-file (rails-refactoring:decamelize to)))))))
-    (when file (error "file '%s' already exists" file)))
-
-  (message "refactoring controller class file")
-  (rails-refactoring:rename-class from to :controller)
-
-  (when (rails-refactoring:file-exists-p from :views-dir)
-    (let ((from-dir (rails-refactoring:file from :views-dir))
-          (to-dir (rails-refactoring:file to :views-dir)))
+  (when (file-exists-p (rails-core:file (rails-core:views-dir from)))
+    (let ((from-dir (rails-core:views-dir from))
+          (to-dir (rails-core:views-dir to)))
       (message "rename view directory from %s to %s" from-dir to-dir)
       (rename-file (rails-core:file from-dir) (rails-core:file to-dir))))
 
-  (when (rails-refactoring:file-exists-p from :functional-test)
-    (message "refactoring functional test class file")
-    (rails-refactoring:rename-class from to :functional-test))
-
-  (when (rails-refactoring:file-exists-p from :rspec-controller)
-    (message "refactoring rspec class file")
-    (rails-refactoring:rename-class from to :rspec-controller))
-
-  (when (rails-refactoring:file-exists-p from :helper)
-    (message "refactoring helper class file")
-    (rails-refactoring:rename-class from to :helper))
-
-  (when (rails-refactoring:file-exists-p from :helper-test)
-    (message "refactoring helper test class file")
-    (rails-refactoring:rename-class from to :helper-test))
-
-  (rails-refactoring:rename-layout (rails-refactoring:decamelize from) (rails-refactoring:decamelize to))
+  (rails-refactoring:rename-layout (rails-refactoring:decamelize from)
+                                   (rails-refactoring:decamelize to))
 
   (when (interactive-p)
     (ignore-errors (rails-refactoring:query-replace from to))
-    (ignore-errors (rails-refactoring:query-replace (rails-refactoring:decamelize from) (rails-refactoring:decamelize to)))
+    (ignore-errors (let ((case-fold-search nil))
+                     (rails-refactoring:query-replace (rails-refactoring:decamelize from)
+                                                      (rails-refactoring:decamelize to))))
     (save-some-buffers)))
 
 
@@ -290,7 +205,8 @@ started to do the rest."
 (require 'rails-ui)
 
 (define-keys rails-minor-mode-map
-  ((rails-key "\C-c R c") 'rails-refactoring:rename-controller))
+  ((rails-key "\C-c R c") 'rails-refactoring:rename-controller)
+  ((rails-key "\C-c R l") 'rails-refactoring:rename-layout))
 
 
 (provide 'rails-refactoring)

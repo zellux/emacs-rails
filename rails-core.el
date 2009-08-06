@@ -261,6 +261,11 @@ CONTROLLER."
               (replace-regexp-in-string "_controller" ""
                                         (rails-core:file-by-class controller t))))))
 
+(defun rails-core:helper-test-file (controller)
+  (when controller
+    (format "test/unit/helpers/%s_helper_test.rb" (rails-core:file-by-class controller t))))
+(assert (string= "test/unit/helpers/foo/bar_quux_helper_test.rb" (rails-core:helper-test-file "Foo::BarQuux")))
+
 (defun rails-core:functional-test-file (controller)
   "Return the functional test file name for the controller named
 CONTROLLER."
