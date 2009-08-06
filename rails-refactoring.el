@@ -113,11 +113,30 @@ project.  This includes all the files in the 'app', 'config',
 
 ;; Refactoring methods
 
-(defun rails-refactoring:query-replace (from to)
-  "Replace some occurrences of FROM to TO in all the project source files."
+(defun rails-refactoring:query-replace (from to &optional dirs)
+  "Replace some occurrences of FROM to TO in all the project
+source files.  If DIRS argument is given the files are limited to
+these directories."
   (interactive "sFrom: \nsTo: ")
-  (tags-query-replace from to nil
-                      (cons 'list (mapcar #'rails-core:file (rails-refactoring:source-files)))))  
+  (mapc (lambda (file)
+          (let ((flymake-start-syntax-check-on-find-file nil)
+                (existing-buffer (get-file-buffer file)))
+            (set-buffer (or existing-buffer (find-file-noselect file)))
+            (goto-char (point-min))
+            (if (re-search-forward from nil t)
+              (progn
+                (switch-to-buffer (current-buffer))
+                (goto-char (point-min))
+                (perform-replace from to t t nil))
+              (unless existing-buffer (kill-buffer nil)))))
+        (mapcar #'rails-core:file
+                (if dirs
+                  (delete-if-not (lambda (file)
+                                   (find-if (lambda (dir)
+                                              (string-match (concat "^" (regexp-quote dir)) file))
+                                            dirs))
+                                 (rails-refactoring:source-files))
+                  (rails-refactoring:source-files)))))
 
 (defun rails-refactoring:rename-class (from-file to-file)
   "Rename class given their file names; FROM-FILE to TO-FILE.
@@ -144,7 +163,7 @@ modified."
     (save-buffer))
 
   (when (interactive-p)
-    (ignore-errors (rails-refactoring:query-replace from to))
+    (ignore-errors (rails-refactoring:query-replace (concat "\\b" (regexp-quote from)) to))
     (save-some-buffers)))
 
 (defun rails-refactoring:rename-layout (from to)
@@ -170,7 +189,8 @@ modified."
 directories are renamed and `rails-refactoring:query-replace' is
 started to do the rest."
   (interactive (list (completing-read "Rename controller: "
-                                      (mapcar (lambda (name) (remove-postfix name "Controller")) (rails-core:controllers))
+                                      (mapcar (lambda (name) (remove-postfix name "Controller"))
+                                              (rails-core:controllers))
                                       nil t
                                       (ignore-errors (rails-core:current-controller)))
                      (read-string "To: ")))
@@ -193,10 +213,22 @@ started to do the rest."
                                    (rails-refactoring:decamelize to))
 
   (when (interactive-p)
-    (ignore-errors (rails-refactoring:query-replace from to))
+    (ignore-errors (rails-refactoring:query-replace (concat "\\b" (regexp-quote from))
+                                                    to
+                                                    '("app/controllers/"
+                                                      "app/helpers/"
+                                                      "app/views/"
+                                                      "test/functional/"
+                                                      "spec/controllers/")))
     (ignore-errors (let ((case-fold-search nil))
-                     (rails-refactoring:query-replace (rails-refactoring:decamelize from)
-                                                      (rails-refactoring:decamelize to))))
+                     (rails-refactoring:query-replace (concat "\\b" (regexp-quote (rails-refactoring:decamelize from)))
+                                                      (rails-refactoring:decamelize to)
+                                                      '("app/controllers/"
+                                                        "app/helpers/"
+                                                        "app/views/"
+                                                        "test/functional/"
+                                                        "spec/controllers/"
+                                                        "config/routes.rb"))))
     (save-some-buffers)))
 
 
@@ -205,6 +237,7 @@ started to do the rest."
 (require 'rails-ui)
 
 (define-keys rails-minor-mode-map
+  ((rails-key "\C-c R q") 'rails-refactoring:query-replace)
   ((rails-key "\C-c R c") 'rails-refactoring:rename-controller)
   ((rails-key "\C-c R l") 'rails-refactoring:rename-layout))
 
