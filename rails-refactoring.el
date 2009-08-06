@@ -80,7 +80,7 @@ project.  This includes all the files in the 'app', 'config',
                    (delete-if (lambda (file) (string-match "_flymake.rb" file))
                               (delete-if-not 'rails-refactoring:source-file-p
                                              (directory-files-recursive (rails-core:file dirname) dirname))))
-                 '("app/" "config/" "lib/" "test/"))))
+                 '("app/" "config/" "lib/" "test/" "spec/"))))
 
 (defun rails-refactoring:classes-alist (&optional source-files)
   "Return a list of all class names and their type in the current
@@ -109,10 +109,16 @@ Returns: \"app/controllers/foo_controller.rb\""
   (cond ((eq type :model)
          (or (rails-core:model-file class)
              (rails-core:file (concat "app/models/" (rails-refactoring:decamelize class) ".rb"))))
+        ((eq type :unit-test)
+         (format "test/unit/%s" (rails-core:file-by-class (concat class "Test"))))
+        ((eq type :rspec-model)
+         (rails-core:rspec-model-file class))
         ((eq type :controller)
          (rails-core:controller-file class))
         ((eq type :functional-test)
          (rails-core:functional-test-file class))
+        ((eq type :rspec-controller)
+         (rails-core:rspec-controller-file class))
         ((eq type :helper)
          (rails-core:helper-file class))
         ((eq type :helper-test)
@@ -121,6 +127,8 @@ Returns: \"app/controllers/foo_controller.rb\""
          (rails-core:views-dir class))
         ((eq type :lib)
          (rails-core:lib-file class))
+        ((eq type :rspec-lib)
+         (rails-core:rspec-lib-file class))
         (t (error "not yet implemented type %s" type))))
 
 (defun rails-refactoring:file-exists-p (class &optional type)
@@ -216,7 +224,7 @@ file is renamed and the class or module definition is modified."
             (message "renaming layout from %s to %s" from-file to-file)
             (rename-file (rails-core:file (format "app/views/layouts/%s" from-file))
                          (rails-core:file (format "app/views/layouts/%s" to-file)))))
-        (delete-if-not (lambda (file) (string= from (substring file 0 (length from))))
+        (delete-if-not (lambda (file) (string-match (concat "^" (regexp-quote from) "\\.") file))
                        (directory-files-recursive (rails-core:file "app/views/layouts"))))
   (when (interactive-p)
     (ignore-errors (rails-refactoring:query-replace from to))
@@ -256,6 +264,10 @@ started to do the rest."
   (when (rails-refactoring:file-exists-p from :functional-test)
     (message "refactoring functional test class file")
     (rails-refactoring:rename-class from to :functional-test))
+
+  (when (rails-refactoring:file-exists-p from :rspec-controller)
+    (message "refactoring rspec class file")
+    (rails-refactoring:rename-class from to :rspec-controller))
 
   (when (rails-refactoring:file-exists-p from :helper)
     (message "refactoring helper class file")
