@@ -117,26 +117,30 @@ project.  This includes all the files in the 'app', 'config',
   "Replace some occurrences of FROM to TO in all the project
 source files.  If DIRS argument is given the files are limited to
 these directories."
-  (interactive "sFrom: \nsTo: ")
-  (mapc (lambda (file)
-          (let ((flymake-start-syntax-check-on-find-file nil)
-                (existing-buffer (get-file-buffer file)))
-            (set-buffer (or existing-buffer (find-file-noselect file)))
+  (interactive "sFrom: \nsTo: ")  
+  (let ((keep-going t)
+        (files (mapcar #'rails-core:file
+                       (if dirs
+                         (delete-if-not (lambda (file)
+                                          (find-if (lambda (dir)
+                                                     (string-match (concat "^" (regexp-quote dir)) file))
+                                                   dirs))
+                                        (rails-refactoring:source-files))
+                         (rails-refactoring:source-files)))))
+    (while (and keep-going files)
+      (let* ((file (car files))
+             (flymake-start-syntax-check-on-find-file nil)
+             (existing-buffer (get-file-buffer file)))
+        (set-buffer (or existing-buffer (find-file-noselect file)))
+        (goto-char (point-min))
+        (if (re-search-forward from nil t)
+          (progn
+            (switch-to-buffer (current-buffer))
             (goto-char (point-min))
-            (if (re-search-forward from nil t)
-              (progn
-                (switch-to-buffer (current-buffer))
-                (goto-char (point-min))
-                (perform-replace from to t t nil))
-              (unless existing-buffer (kill-buffer nil)))))
-        (mapcar #'rails-core:file
-                (if dirs
-                  (delete-if-not (lambda (file)
-                                   (find-if (lambda (dir)
-                                              (string-match (concat "^" (regexp-quote dir)) file))
-                                            dirs))
-                                 (rails-refactoring:source-files))
-                  (rails-refactoring:source-files)))))
+            (unless (perform-replace from to t t nil)
+              (setq keep-going nil)))
+          (unless existing-buffer (kill-buffer nil))))
+      (setq files (cdr files)))))
 
 (defun rails-refactoring:rename-class (from-file to-file)
   "Rename class given their file names; FROM-FILE to TO-FILE.
