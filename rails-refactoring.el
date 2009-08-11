@@ -117,7 +117,7 @@ project.  This includes all the files in the 'app', 'config',
   "Replace some occurrences of FROM to TO in all the project
 source files.  If DIRS argument is given the files are limited to
 these directories."
-  (interactive "sFrom: \nsTo: ")  
+  (interactive "sFrom: \nsTo: ")
   (let ((keep-going t)
         (files (mapcar #'rails-core:file
                        (if dirs
@@ -217,22 +217,22 @@ started to do the rest."
                                    (rails-refactoring:decamelize to))
 
   (when (interactive-p)
-    (ignore-errors (rails-refactoring:query-replace (concat "\\b" (regexp-quote from))
-                                                    to
-                                                    '("app/controllers/"
-                                                      "app/helpers/"
-                                                      "app/views/"
-                                                      "test/functional/"
-                                                      "spec/controllers/")))
-    (ignore-errors (let ((case-fold-search nil))
-                     (rails-refactoring:query-replace (concat "\\b" (regexp-quote (rails-refactoring:decamelize from)))
-                                                      (rails-refactoring:decamelize to)
-                                                      '("app/controllers/"
-                                                        "app/helpers/"
-                                                        "app/views/"
-                                                        "test/functional/"
-                                                        "spec/controllers/"
-                                                        "config/routes.rb"))))
+    (let ((case-fold-search nil))
+      (rails-refactoring:query-replace (concat "\\b" (regexp-quote from))
+                                     to
+                                     '("app/controllers/"
+                                       "app/helpers/"
+                                       "app/views/"
+                                       "test/functional/"
+                                       "spec/controllers/"))
+      (rails-refactoring:query-replace (concat "\\b" (regexp-quote (rails-refactoring:decamelize from)) "\\b")
+                                       (rails-refactoring:decamelize to)
+                                       '("app/controllers/"
+                                         "app/helpers/"
+                                         "app/views/"
+                                         "test/functional/"
+                                         "spec/controllers/"
+                                         "config/routes.rb")))
     (save-some-buffers)))
 
 
