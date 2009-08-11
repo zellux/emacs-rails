@@ -110,6 +110,45 @@ project.  This includes all the files in the 'app', 'config',
 (assert (string= "FooTest" (rails-refactoring:class-from-file "test/unit/foo_test.rb")))
 (assert (string= "FooHelperTest" (rails-refactoring:class-from-file "test/unit/helpers/foo_helper_test.rb")))
 
+(defun rails-refactoring:legal-class-name-p (name)
+  "Return t when NAME is a valid Ruby class name."
+  (let ((case-fold-search nil))
+    (not (null (string-match "^[A-Z][A-Za-z0-9]*$" name)))))
+
+(assert (rails-refactoring:legal-class-name-p "FooBar"))
+(assert (not (rails-refactoring:legal-class-name-p "Foo Bar")))
+(assert (not (rails-refactoring:legal-class-name-p "foo")))
+
+(defun rails-refactoring:read-string (prompt &optional
+                                             pred error
+                                             initial-input
+                                             history
+                                             default-value
+                                             inherit-input-method)
+  "Prompt for string in minibuffer like `read-string'.  The
+second argument PRED determines is the input is valid.  If the
+input is invalid and the third argument ERROR is given that
+message is displayed."
+  (let (result)
+    (while (not result)
+      (let ((answer (read-string prompt initial-input history
+                                 default-value inherit-input-method)))
+        (if (or (null pred) (funcall pred answer))
+          (setq result answer)
+          (progn
+            (message (or error "invalid input") answer)
+            (sleep-for 1)))))
+    result))
+
+(defun rails-refactoring:read-class-name (prompt &optional initial-input history default-value inherit-input-method)
+  "Prompt for a Ruby class name in minibuffer like `read-string'.
+Only a legal class name is accepted."
+  (rails-refactoring:read-string prompt
+                                 'rails-refactoring:legal-class-name-p
+                                 "`%s' is not a valid Ruby class name"
+                                 initial-input history default-value
+                                 inherit-input-method))
+
 
 ;; Refactoring methods
 
@@ -197,7 +236,7 @@ started to do the rest."
                                               (rails-core:controllers))
                                       nil t
                                       (ignore-errors (rails-core:current-controller)))
-                     (read-string "To: ")))
+                     (rails-refactoring:read-class-name "To: ")))
   (rails-refactoring:disclaim "Rename controller")
 
   (mapc (lambda (func)
