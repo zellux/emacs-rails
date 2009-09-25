@@ -35,6 +35,7 @@
     "app/helpers"
     "test/unit"
     "test/functional"
+    "test/fixtures"
     "spec/controllers"
     "spec/fixtures"
     "spec/lib"
