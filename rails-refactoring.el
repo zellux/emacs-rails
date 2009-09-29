@@ -324,9 +324,13 @@ the rest."
     (goto-char (point-min))
     (re-search-forward "\\bdef self.up")
     (end-of-line)
-    (insert (format "\n    rename_table :%s :%s\n" from-table to-table))
+    (insert "\n")
+    (indent-according-to-mode)
+    (insert (format "rename_table :%s, :%s" from-table to-table))
     (re-search-forward "\\bdef self.down")
-    (insert (format "\n    rename_table :%s :%s\n" to-table from-table))))
+    (insert "\n")
+    (indent-according-to-mode)
+    (insert (format "rename_table :%s, :%s" to-table from-table))))
 
 
 ;; Tie up in UI
