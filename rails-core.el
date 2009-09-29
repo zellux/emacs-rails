@@ -124,7 +124,8 @@ it does not exist, ask to create it using QUESTION as a prompt."
        ((file-exists-p
          (rails-core:file (concat "app/models/" stripped-model-file)))
         (concat "app/models/" stripped-model-file))
-       (t nil)))))
+       (t
+        (concat "app/models/" model-file))))))
 
 (defun rails-core:model-exist-p (model-name)
   "Return t if model MODEL-NAME exist."
