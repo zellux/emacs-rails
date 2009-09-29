@@ -171,6 +171,7 @@ these directories."
              (flymake-start-syntax-check-on-find-file nil)
              (existing-buffer (get-file-buffer file)))
         (set-buffer (or existing-buffer (find-file-noselect file)))
+        (message ".. %s .." file)
         (goto-char (point-min))
         (if (re-search-forward from nil t)
           (progn
@@ -264,8 +265,8 @@ started to do the rest."
                                        "app/views/"
                                        "test/functional/"
                                        "spec/controllers/"))
-      (rails-refactoring:query-replace (concat "\\b" (regexp-quote (rails-refactoring:decamelize from)) "\\b")
-                                       (rails-refactoring:decamelize to)
+      (rails-refactoring:query-replace (concat "\\b\\(:?\)" (regexp-quote (rails-refactoring:decamelize from)) "\\b")
+                                       (concat "\\1" (rails-refactoring:decamelize to))
                                        '("app/controllers/"
                                          "app/helpers/"
                                          "app/views/"
@@ -304,15 +305,17 @@ the rest."
                     (to (cadr args)))
                 (rails-refactoring:query-replace from to '("app/" "test/"))))
             (mapcar (lambda (func)
-                      (list (concat "\\b" (regexp-quote (funcall func from))) (funcall func to)))
+                      (list (concat "\\b\\(:?\\)" (regexp-quote (funcall func from)))
+                            (concat "\\1" (funcall func to))))
                     (list 'identity
                           'pluralize-string
                           'rails-refactoring:decamelize
                           (lambda (val) (rails-refactoring:decamelize (pluralize-string val))))))))
 
   (let ((migration-name (concat "Rename" (pluralize-string from) "To" (pluralize-string to))))
-    (rails-script:generate-migration (rails-refactoring:rename-table-migration-name from to))
-    (message "TODO add rename-table statements to migration")))
+    (rails-script:generate-migration migration-name)
+    (message "TODO add rename-table statements to migration")
+    (message "TODO add rename association columns to migration"))
 
 (defun rails-refactoring:rename-table-migration-edit (from to)
   "Add rename table code to migration in current buffer."
