@@ -274,6 +274,57 @@ started to do the rest."
                                          "config/routes.rb")))
     (save-some-buffers)))
 
+(defun rails-refactoring:rename-model (from to)
+  "Rename model from FROM to TO.  All appropriate files are
+renamed and `rails-refactoring:query-replace' is started to do
+the rest."
+  (interactive (list (completing-read "Rename model: "
+                                      (rails-core:models)
+                                      nil t
+                                      (ignore-errors (rails-core:current-model)))
+                     (rails-refactoring:read-class-name "To: ")))
+  (rails-refactoring:disclaim "Rename model")
+
+  (mapc (lambda (func)
+          (when (file-exists-p (rails-core:file (funcall func from)))
+            (rails-refactoring:rename-class (funcall func from)
+                                            (funcall func to))))
+        '(rails-core:model-file rails-core:unit-test-file rails-core:rspec-model-file))
+
+  (mapc (lambda (func)
+          (when (file-exists-p (rails-core:file (funcall func from)))
+            (rename-file (rails-core:file (funcall func from))
+                         (rails-core:file (funcall func to)))))
+        '(rails-core:fixture-file rails-core:rspec-fixture-file))
+
+  (when (interactive-p)
+    (let ((case-fold-search nil))
+      (mapc (lambda (args)
+              (let ((from (car args))
+                    (to (cadr args)))
+                (rails-refactoring:query-replace from to '("app/" "test/"))))
+            (mapcar (lambda (func)
+                      (list (concat "\\b" (regexp-quote (funcall func from))) (funcall func to)))
+                    (list 'identity
+                          'pluralize-string
+                          'rails-refactoring:decamelize
+                          (lambda (val) (rails-refactoring:decamelize (pluralize-string val))))))))
+
+  (let ((migration-name (concat "Rename" (pluralize-string from) "To" (pluralize-string to))))
+    (rails-script:generate-migration (rails-refactoring:rename-table-migration-name from to))
+    (message "TODO add rename-table statements to migration")))
+
+(defun rails-refactoring:rename-table-migration-edit (from to)
+  "Add rename table code to migration in current buffer."
+  (let ((from-table (rails-refactoring:decamelize (pluralize-string from)))
+        (to-table (rails-refactoring:decamelize (pluralize-string to))))
+    (goto-char (point-min))
+    (re-search-forward "\\bdef self.up")
+    (end-of-line)
+    (insert (format "\n    rename_table :%s :%s\n" from-table to-table))
+    (re-search-forward "\\bdef self.down")
+    (insert (format "\n    rename_table :%s :%s\n" to-table from-table))))
+
 
 ;; Tie up in UI
 
@@ -281,6 +332,7 @@ started to do the rest."
 
 (define-keys rails-minor-mode-map
   ((rails-key "\C-c R q") 'rails-refactoring:query-replace)
+  ((rails-key "\C-c R m") 'rails-refactoring:rename-model)
   ((rails-key "\C-c R c") 'rails-refactoring:rename-controller)
   ((rails-key "\C-c R l") 'rails-refactoring:rename-layout))
 
