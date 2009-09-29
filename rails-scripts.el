@@ -47,7 +47,7 @@ For example -c to remove files from svn.")
 (defvar rails-script:buffer-name "*ROutput*")
 
 (defvar rails-script:running-script-name nil
-  "Curently running the script name")
+  "Currently running the script name")
 
 (defvar rails-script:history (list))
 (defvar rails-script:history-of-generate (list))
