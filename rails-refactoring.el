@@ -315,7 +315,7 @@ the rest."
   (let ((migration-name (concat "Rename" (pluralize-string from) "To" (pluralize-string to))))
     (rails-script:generate-migration migration-name)
     (message "TODO add rename-table statements to migration")
-    (message "TODO add rename association columns to migration"))
+    (message "TODO add rename association columns to migration")))
 
 (defun rails-refactoring:rename-table-migration-edit (from to)
   "Add rename table code to migration in current buffer."
