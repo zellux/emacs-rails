@@ -313,9 +313,9 @@ the rest."
                           (lambda (val) (rails-refactoring:decamelize (pluralize-string val))))))))
 
   (let ((migration-name (concat "Rename" (pluralize-string from) "To" (pluralize-string to))))
-    (rails-script:generate-migration migration-name)
-    (message "TODO add rename-table statements to migration")
-    (message "TODO add rename association columns to migration")))
+    (rails-refactoring:enqueue-migration-edit migration-name
+                                              'rails-refactoring:rename-table-migration-edit from to)
+    (rails-script:generate-migration migration-name)))
 
 (defun rails-refactoring:rename-table-migration-edit (from to)
   "Add rename table code to migration in current buffer."
@@ -330,7 +330,41 @@ the rest."
     (re-search-forward "\\bdef self.down")
     (insert "\n")
     (indent-according-to-mode)
-    (insert (format "rename_table :%s, :%s" to-table from-table))))
+    (insert (format "rename_table :%s, :%s" to-table from-table))
+    (save-buffer)))
+
+
+;; Setup hooks
+
+(defvar rails-refactoring:after-rails-script-jobs nil
+  "Queue of jobs to be ran via
+`rails-script:run-after-stop-hook'.  Jobs are ran by
+`rails-refactoring:run-after-rails-script-jobs' and dequeued when
+they return non nil.")
+
+(defun rails-refactoring:run-after-rails-script-jobs ()
+  "Run pending `rails-script:run-after-stop-hook' refactoring
+jobs"
+  (setq rails-refactoring:after-rails-script-jobs
+        (delete-if (lambda (spec)
+                     (funcall (car spec) (cadr spec) (cddr spec)))
+                   rails-refactoring:after-rails-script-jobs)))
+
+(add-hook 'rails-script:run-after-stop-hook 'rails-refactoring:run-after-rails-script-jobs)
+
+(defmacro rails-refactoring:enqueue-migration-edit (migration function &rest arguments)
+  "Enqueue migration edit to be run when
+`rails-script:generation-migration' is finished and migration
+file is available."
+  (let ((migration-file (gensym)))
+    `(push (cons (lambda (migration args)
+                   (let ((,migration-file (rails-core:migration-file migration)))
+                     (when ,migration-file
+                       (with-current-buffer (find-file-noselect (rails-core:file ,migration-file))
+                         (eval (cons ,function args)))
+                       t)))
+                 (list ,migration ,@arguments))
+           rails-refactoring:after-rails-script-jobs)))
 
 
 ;; Tie up in UI
