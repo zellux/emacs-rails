@@ -361,7 +361,7 @@ file is available."
                    (let ((,migration-file (rails-core:migration-file migration)))
                      (when ,migration-file
                        (with-current-buffer (find-file-noselect (rails-core:file ,migration-file))
-                         (eval (cons ,function args)))
+                         (apply ,function args))
                        t)))
                  (list ,migration ,@arguments))
            rails-refactoring:after-rails-script-jobs)))
