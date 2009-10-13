@@ -155,32 +155,39 @@ Only a legal class name is accepted."
 (defun rails-refactoring:query-replace (from to &optional dirs)
   "Replace some occurrences of FROM to TO in all the project
 source files.  If DIRS argument is given the files are limited to
-these directories."
+these directories.
+
+The function returns nil when the user cancelled or an alist of
+the form (FILE . SITES) where SITES are the replacement sites as
+returned by `perform-replace' per FILE."
   (interactive "sFrom: \nsTo: ")
-  (let ((keep-going t)
-        (files (mapcar #'rails-core:file
-                       (if dirs
-                         (delete-if-not (lambda (file)
-                                          (find-if (lambda (dir)
-                                                     (string-match (concat "^" (regexp-quote dir)) file))
-                                                   dirs))
-                                        (rails-refactoring:source-files))
-                         (rails-refactoring:source-files)))))
+  (let ((result nil)
+        (keep-going t)
+        (files (if dirs
+                 (delete-if-not (lambda (file)
+                                  (find-if (lambda (dir)
+                                             (string-match (concat "^" (regexp-quote dir)) file))
+                                           dirs))
+                                (rails-refactoring:source-files))
+                 (rails-refactoring:source-files))))
     (while (and keep-going files)
       (let* ((file (car files))
              (flymake-start-syntax-check-on-find-file nil)
-             (existing-buffer (get-file-buffer file)))
-        (set-buffer (or existing-buffer (find-file-noselect file)))
+             (existing-buffer (get-file-buffer (rails-core:file file))))
+        (set-buffer (or existing-buffer (find-file-noselect (rails-core:file file))))
         (message ".. %s .." file)
         (goto-char (point-min))
         (if (re-search-forward from nil t)
           (progn
             (switch-to-buffer (current-buffer))
             (goto-char (point-min))
-            (unless (perform-replace from to t t nil)
-              (setq keep-going nil)))
+            (let ((sites (perform-replace from to t t nil)))
+              (if sites
+                (push (cons file sites) result)
+                (setq keep-going nil))))
           (unless existing-buffer (kill-buffer nil))))
-      (setq files (cdr files)))))
+      (setq files (cdr files)))
+    (and keep-going result)))
 
 (defun rails-refactoring:rename-class (from-file to-file)
   "Rename class given their file names; FROM-FILE to TO-FILE.
