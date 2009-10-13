@@ -265,7 +265,7 @@ started to do the rest."
                                        "app/views/"
                                        "test/functional/"
                                        "spec/controllers/"))
-      (rails-refactoring:query-replace (concat "\\b\\(:?\)" (regexp-quote (rails-refactoring:decamelize from)) "\\b")
+      (rails-refactoring:query-replace (concat "\\b\\(:?\\)" (regexp-quote (rails-refactoring:decamelize from)) "\\b")
                                        (concat "\\1" (rails-refactoring:decamelize to))
                                        '("app/controllers/"
                                          "app/helpers/"
