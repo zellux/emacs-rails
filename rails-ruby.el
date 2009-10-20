@@ -173,29 +173,26 @@ See the variable `align-rules-list' for more details.")
 
 (require 'inf-ruby)
 
-(if (fboundp 'inf-ruby-mode)
-  (defun run-ruby-in-buffer (buf script &optional params)
-    "Run CMD as a ruby process in BUF if BUF does not exist."
-    (let ((abuf (concat "*" buf "*")))
-      (when (not (comint-check-proc abuf))
-        (set-buffer (make-comint buf rails-ruby-command nil script params)))
-      (inferior-ruby-mode)
-      (make-local-variable 'inferior-ruby-first-prompt-pattern)
-      (make-local-variable 'inferior-ruby-prompt-pattern)
-      (setq inferior-ruby-first-prompt-pattern "^>> "
-            inferior-ruby-prompt-pattern "^>> ")
-      (pop-to-buffer abuf)))
-  (defun run-ruby-in-buffer (buf script &optional params)
-    "Run CMD as a ruby process in BUF if BUF does not exist."
-    (let ((abuf (concat "*" buf "*")))
-      (when (not (comint-check-proc abuf))
-        (set-buffer (make-comint buf rails-ruby-command nil script params)))
-      (inf-ruby-mode)
-      (make-local-variable 'inf-ruby-first-prompt-pattern)
-      (make-local-variable 'inf-ruby-prompt-pattern)
-      (setq inf-ruby-first-prompt-pattern "^>> "
-            inf-ruby-prompt-pattern "^>> ")
-      (pop-to-buffer abuf))))
+(defun run-ruby-in-buffer (buf script &optional params)
+  "Run CMD as a ruby process in BUF if BUF does not exist."
+  (let ((abuf (concat "*" buf "*")))
+    (when (not (comint-check-proc abuf))
+      (set-buffer (make-comint buf rails-ruby-command nil script params)))
+    (if (fboundp 'inf-ruby-mode)
+      (progn
+        (inf-ruby-mode)
+        (make-local-variable 'inf-ruby-first-prompt-pattern)
+        (make-local-variable 'inf-ruby-prompt-pattern)
+        (setq inf-ruby-first-prompt-pattern "^>> "
+              inf-ruby-prompt-pattern "^>> ")
+        (pop-to-buffer abuf))
+      (progn
+        (inferior-ruby-mode)
+        (make-local-variable 'inferior-ruby-first-prompt-pattern)
+        (make-local-variable 'inferior-ruby-prompt-pattern)
+        (setq inferior-ruby-first-prompt-pattern "^>> "
+              inferior-ruby-prompt-pattern "^>> ")
+        (pop-to-buffer abuf)))))
 
 (defun complete-ruby-method (prefix &optional maxnum)
   (if (capital-word-p prefix)
