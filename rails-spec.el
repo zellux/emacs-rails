@@ -46,10 +46,22 @@
              rails-spec:runner-options " "
              files))))
 
-(defun rails-spec:run-this-file ()
-  "Run spec for current file"
+(defun rails-spec:run-current ()
+  "Run spec for the current controller/model/mailer."
   (interactive)
-  (rails-spec:run-files (buffer-file-name (current-buffer))))
+  (let* ((type (rails-core:buffer-type))
+         (spec (cond
+                 ((find type '(:model :mailer :rspec-fixture))
+                  (rails-core:rspec-model-file (rails-core:current-model)))
+                 ((find type '(:controller :helper :view))
+                  (rails-core:rspec-controller-file (rails-core:current-controller)))
+                 ((find type '(:rspec-model :rspec-controller :rspec-lib))
+                  (buffer-file-name))
+                 ((eql type :lib)
+                  (rails-core:rspec-lib-file (rails-core:current-lib))))))
+    (if spec
+      (rails-spec:run-files spec)
+      (message "No spec found for %s" (buffer-file-name)))))
 
 (defun rails-spec:run-all ()
   "Run spec for all files in project (rails-spec:all-files variable)"

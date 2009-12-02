@@ -305,7 +305,7 @@
 
   ;; RSpec
   ((rails-key "\C-c z f") 'rails-spec:run-files)
-  ((rails-key "\C-c z .") 'rails-spec:run-this-file)
+  ((rails-key "\C-c z .") 'rails-spec:run-current)
   ((rails-key "\C-c z a") 'rails-spec:run-all)
   ((rails-key "\C-c z l") 'rails-spec:run-last)
   ((rails-key "\C-c z s") 'rails-spec:run-this-spec)
