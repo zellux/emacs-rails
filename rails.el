@@ -182,7 +182,7 @@ Emacs w3m browser."
 
 (defvar rails-directory<-->types
   '((:controller       "app/controllers/")
-    (:layout           "app/layouts/")
+    (:layout           "app/views/layouts/")
     (:view             "app/views/")
     (:observer         "app/models/" (lambda (file) (rails-core:observer-p file)))
     (:mailer           "app/models/" (lambda (file) (rails-core:mailer-p file)))
