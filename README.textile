@@ -25,7 +25,7 @@ Before you install this package make sure the following dependencies met:
 * Ruby Mode
 * Inferior Ruby Mode
 
-All of these are installable via the "ELPA":http://tromey.com/elpa/.
+These are installable via the "ELPA":http://tromey.com/elpa/ or using @apt-get install ruby-elisp@.  Some Emacs distributions include them by default.
 
 Ruby mode doesn't know about typical Ruby DSL files so you'll need to give Emacs a hand:
 
