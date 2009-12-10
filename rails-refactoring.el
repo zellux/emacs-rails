@@ -113,9 +113,10 @@ project.  This includes all the files in the 'app', 'config',
 (defun rails-refactoring:legal-class-name-p (name)
   "Return t when NAME is a valid Ruby class name."
   (let ((case-fold-search nil))
-    (not (null (string-match "^[A-Z][A-Za-z0-9]*$" name)))))
+    (not (null (string-match "^\\([A-Z][A-Za-z0-9]*\\)\\(::[A-Z][A-Za-z0-9]*\\)*$" name)))))
 
 (assert (rails-refactoring:legal-class-name-p "FooBar"))
+(assert (rails-refactoring:legal-class-name-p "Foo::Bar"))
 (assert (not (rails-refactoring:legal-class-name-p "Foo Bar")))
 (assert (not (rails-refactoring:legal-class-name-p "foo")))
 
