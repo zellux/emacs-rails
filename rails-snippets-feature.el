@@ -137,7 +137,7 @@
        ("array" "Array.new($${10}) { |$${i}|$. }" "Array.new(10) { |i| ... }")
        ("any" "any? { |$${e}| $. }" "any? { |e| ... }")
        ("all" "all? { |$${e}| $. }" "all? { |e| ... }")) ; collections
-    (0 "erb" html-mode-abbrev-table html-helper-mode-abbrev-table nxml-mode-abbrev-table
+    (0 "erb" html-mode-abbrev-table html-helper-mode-abbrev-table nxml-mode-abbrev-table rhtml-mode-abbrev-tables
        ("title" "<title>$${title}</title>" "title")
        ("textarea" "<textarea name=\"$${Name}\" rows=\"$${8}\" cols=\"$${40}\">$.</textarea>" "textarea")
        ("table" "<table border=\"$${0}\" $${cellpadding}>\n$><tr><th>$${Header}</th></tr>\n$><tr><td>$${Data}</td></tr>\n</table>" "table")
