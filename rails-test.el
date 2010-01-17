@@ -111,7 +111,7 @@
 		  (?\E (setq rails-ui:num-errors (+ 1 rails-ui:num-errors)))
 		  (?\F (setq rails-ui:num-failures (+ 1 rails-ui:num-failures)))
 		  (?\. (setq rails-ui:num-ok (+ 1 rails-ui:num-ok))))))))))
-    (when (and content  
+    (when (and content
 	       (not rails-test:quiet))
       (message "Progress of %s: %s" rails-script:running-script-name content))))
 
@@ -235,7 +235,7 @@ Used when it's determined that the output buffer needs to be shown."
 (defun rails-test:active-support-test-case-current-test ()
   (save-excursion
     (ruby-end-of-block)
-    (and (search-backward-regexp "^[ ]*test \"\\([a-z0-9_ ]+\\)\"[ ]*do" nil t)
+    (and (search-backward-regexp "^[ ]*test [\'\"]\\([a-z0-9_ ]+\\)[\'\"][ ]*do" nil t)
          (match-string-no-properties 1))))
 
 (defun rails-test:run-current-method ()
