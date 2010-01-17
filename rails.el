@@ -484,6 +484,7 @@ necessary."
   (make-local-variable 'tags-file-name)
   (make-local-variable 'rails-primary-switch-func)
   (make-local-variable 'rails-secondary-switch-func)
+  (set (make-local-variable 'compile-command) "rake")
   (rails-features:install))
 
 ;; hooks
