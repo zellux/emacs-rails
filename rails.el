@@ -169,7 +169,7 @@ Emacs w3m browser."
   :type 'integer)
 
 (defvar rails-version "0.5.99.6")
-(defvar rails-templates-list '("html.erb" "erb" "js.rjs" "builder" "rhtml" "rxml" "rjs" "haml" "liquid" "mab"))
+(defvar rails-templates-list '("html.erb" "erb" "js.rjs" "builder" "rhtml" "rxml" "rjs" "haml" "liquid" "mab" "rtex" "prawn"))
 (defvar rails-use-another-define-key nil)
 (defvar rails-primary-switch-func nil)
 (defvar rails-secondary-switch-func nil)
@@ -225,7 +225,7 @@ Emacs w3m browser."
   :group 'rails
   :type '(repeat string))
 
-(defcustom rails-grep-extensions '("builder" "erb" "haml" "liquid" "mab" "rake" "rb" "rhtml" "rjs" "rxml" "yml" "feature" "js" "html")
+(defcustom rails-grep-extensions '("builder" "erb" "haml" "liquid" "mab" "rake" "rb" "rhtml" "rjs" "rxml" "yml" "feature" "js" "html" "rtex" "prawn")
   "List of file extensions which grep searches."
   :group 'rails
   :type '(repeat string))
