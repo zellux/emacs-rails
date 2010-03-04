@@ -120,8 +120,6 @@
   (rails-script:setup-output-buffer)
   ; replace compilation font-lock-keywords
   (set (make-local-variable 'compilation-mode-font-lock-keywords) rails-test:font-lock-keywords)
-  ; skip anythins less that error
-  (set (make-local-variable 'compilation-skip-threshold) 2)
   (set (make-local-variable 'compilation-error-regexp-alist-alist)
        (rails-test:error-regexp-alist))
   (set (make-local-variable 'compilation-error-regexp-alist)
