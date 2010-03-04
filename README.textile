@@ -27,14 +27,6 @@ Before you install this package make sure the following dependencies met:
 
 These are installable via the "ELPA":http://tromey.com/elpa/ or using @apt-get install ruby-elisp@.  Some Emacs distributions include them by default.
 
-Ruby mode doesn't know about typical Ruby DSL files so you'll need to give Emacs a hand:
-
-<pre><code>  (add-to-list 'auto-mode-alist '("\\.builder$" . ruby-mode))
-  (add-to-list 'auto-mode-alist '("\\.rake$" . ruby-mode))
-  (add-to-list 'auto-mode-alist '("Rakefile$" . ruby-mode))
-  (add-to-list 'auto-mode-alist '("Capfile$" . ruby-mode))
-</code></pre>
-
 
 h3. Rails-minor-mode
 

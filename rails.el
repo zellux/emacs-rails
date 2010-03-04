@@ -536,23 +536,20 @@ necessary."
             (if (rails-project:root)
                 (rails-minor-mode t))))
 
+(dolist (pair '(("\\.rb$"      . ruby-mode)
+                ("\\.rake$"    . ruby-mode)
+                ("\\.mab$"     . ruby-mode)
+                ("Rakefile$"   . ruby-mode)
+                ("Capfile$"    . ruby-mode)
+                ("\\.rxml$"    . ruby-mode)
+                ("\\.builder$" . ruby-mode)
+                ("\\.rjs$"     . ruby-mode)
+                ("\\.prawn$"   . ruby-mode)
+                ("\\.rhtml$"   . rhtml-mode)
+                ("\\.erb$"     . rhtml-mode)))
+  (add-to-list 'auto-mode-alist pair)
+  (modify-coding-system-alist 'file (car pair) 'utf-8))
 
-(autoload 'haml-mode "haml-mode" "" t)
-
-(setq auto-mode-alist  (cons '("\\.rb$"      . ruby-mode) auto-mode-alist))
-(setq auto-mode-alist  (cons '("\\.rake$"    . ruby-mode) auto-mode-alist))
-(setq auto-mode-alist  (cons '("\\.mab$"     . ruby-mode) auto-mode-alist))
-(setq auto-mode-alist  (cons '("Rakefile$"   . ruby-mode) auto-mode-alist))
-(setq auto-mode-alist  (cons '("\\.haml$"    . haml-mode) auto-mode-alist))
-(setq auto-mode-alist  (cons '("\\.rxml$"    . ruby-mode) auto-mode-alist))
-(setq auto-mode-alist  (cons '("\\.builder$" . ruby-mode) auto-mode-alist))
-(setq auto-mode-alist  (cons '("\\.rjs$"     . ruby-mode) auto-mode-alist))
-(setq auto-mode-alist  (cons '("\\.rhtml$"   . rhtml-mode) auto-mode-alist))
-(setq auto-mode-alist  (cons '("\\.erb$"     . rhtml-mode) auto-mode-alist))
-
-(modify-coding-system-alist 'file "\\.rb$"     'utf-8)
-(modify-coding-system-alist 'file "\\.rake$"   'utf-8)
-(modify-coding-system-alist 'file "Rakefile$" 'utf-8)
 (modify-coding-system-alist 'file (rails-core:regex-for-match-view) 'utf-8)
 
 ;; Some navigation breaks if max-lisp-eval-depth is not high enough, up it if too low
