@@ -212,9 +212,10 @@ Used when it's determined that the output buffer needs to be shown."
   (interactive)
   (let* ((model (rails-core:current-model))
          (controller (rails-core:current-controller))
+         (mailer (rails-core:current-mailer))
          (func-test (rails-core:functional-test-file controller))
          (unit-test (rails-core:unit-test-file model))
-         (mailer-test (rails-core:unit-test-file controller)))
+         (mailer-test (rails-core:unit-test-file mailer)))
     (rails-test:run-single-file
      (cond
       ;; model
@@ -223,8 +224,7 @@ Used when it's determined that the output buffer needs to be shown."
       ((and controller (not (rails-core:mailer-p controller)) func-test)
        func-test)
       ;; mailer
-      ((and controller (rails-core:mailer-p controller) unit-test)
-       unit-test)
+      ((and mailer mailer-test) mailer-test)
       ;; otherwise...
       (t (if (string-match "test.*\\.rb" (buffer-file-name))
              (buffer-file-name)

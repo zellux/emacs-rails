@@ -600,14 +600,13 @@ If the action is nil, return all views for the controller."
 (defun rails-core:current-mailer ()
   "Return the current Rails Mailer, else return nil."
   (let* ((file-class (rails-core:class-by-file (buffer-file-name)))
-         (test (remove-postfix file-class "Test")))
-    (when (or (rails-core:mailer-p file-class)
-              (rails-core:mailer-p test))
-      (case (rails-core:buffer-type)
-        (:mailer    file-class)
-        (:unit-test test)
-        (:view (rails-core:class-by-file
-                (directory-file-name (directory-of-file (buffer-file-name)))))))))
+         (test (remove-postfix file-class "Test"))
+         (mailer-class (case (rails-core:buffer-type)
+                         (:mailer    file-class)
+                         (:unit-test test)
+                         (:view      (rails-core:class-by-file
+                                      (directory-file-name (directory-of-file (buffer-file-name))))))))
+    (and (rails-core:mailer-p mailer-class) mailer-class)))
 
 (defun rails-core:current-action ()
   "Return the current action in the current Rails controller."
