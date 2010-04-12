@@ -59,7 +59,7 @@
 (defun rails-test:line-regexp (&optional append prepend)
   (concat
    append
-   "\\[?/?\\(\\(?:app\\|config\\|lib\\|test\\|spec\\)?/[^ \f\n\r\t\v]+?\\):\\([0-9]+\\)\\(?::in\s*`\\(.*?\\)'\\)?\\]?"
+   "\\[?/?\\(\\(?:app\\|config\\|lib\\|test\\|spec\\|vendor\\)?/[^ \f\n\r\t\v]+?\\):\\([0-9]+\\)\\(?::in\s*`\\(.*?\\)'\\)?\\]?"
    prepend))
 
 (defun rails-test:error-regexp-alist ()
