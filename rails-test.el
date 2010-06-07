@@ -233,8 +233,8 @@ Used when it's determined that the output buffer needs to be shown."
 (defun rails-test:active-support-test-case-current-test ()
   (save-excursion
     (ruby-end-of-block)
-    (and (search-backward-regexp "^[ ]*test [\'\"]\\([a-z0-9_ ]+\\)[\'\"][ ]*do" nil t)
-         (match-string-no-properties 1))))
+    (and (search-backward-regexp "^[ \t]+test[ \t]+\\([\'\"]\\)\\(.*?\\)\\1[ \t]+do" nil t)
+         (match-string-no-properties 2))))
 
 (defun rails-test:run-current-method ()
   "Run a test for the current method."
@@ -243,7 +243,7 @@ Used when it's determined that the output buffer needs to be shown."
         (method (rails-core:current-method-name))
         (description (or (rails-test:active-support-test-case-current-test) (rails-shoulda:current-test))))
     (cond (description
-           (rails-test:run-single-file file (format "--name=/%s/" (replace-regexp-in-string "[\+\. \'\"\(\)]" "." description))))
+           (rails-test:run-single-file file (format "--name=/%s/" (replace-regexp-in-string "[^a-z0-9,-]" "." description))))
           (method
            (rails-test:run-single-file file (format "--name=%s" method))))))
 
