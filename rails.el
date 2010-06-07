@@ -492,7 +492,8 @@ necessary."
        (concat ".*\\(" (rails-core:regex-for-match-view)
                "\\|" (mapconcat #'car rails-auto-mode-alist "\\|")
                "\\|" (mapconcat (lambda (ext) (concat "\\." ext "$")) rails-refactoring-source-extensions "\\|")
-               "\\|\\.css$\\)"))
+               "\\|" (mapconcat (lambda (ext) (concat "\\." ext "$")) rails-grep-extensions "\\|")
+               "\\)"))
   (rails-features:install))
 
 ;; hooks
