@@ -296,7 +296,7 @@ Emacs w3m browser."
           (unless (string= buf "*ri*")
             (switch-to-buffer-other-window "*ri*"))
           (setq buffer-read-only nil)
-          (kill-region (point-min) (point-max))
+          (erase-buffer)
           (message (concat "Please wait..."))
           (call-process rails-ri-command nil "*ri*" t "-T" "-f" "ansi" item)
 ;          (local-set-key [return] 'rails-search-doc) ; because this kicks in in text files. why? -mike

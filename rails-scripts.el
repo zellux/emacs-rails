@@ -178,7 +178,7 @@ BUFFER-MAJOR-MODE and process-sentinel SENTINEL."
          (with-current-buffer (get-buffer rails-script:buffer-name)
            (let ((buffer-read-only nil)
                  (win (get-buffer-window-list rails-script:buffer-name)))
-             (kill-region (point-min) (point-max)))
+             (erase-buffer))
            (if buffer-major-mode
                (apply buffer-major-mode (list))
              (rails-script:output-mode))
