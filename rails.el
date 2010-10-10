@@ -508,7 +508,6 @@ necessary."
             (modify-syntax-entry ?! "w" (syntax-table))
             (modify-syntax-entry ?: "w" (syntax-table))
             (modify-syntax-entry ?_ "w" (syntax-table))
-            ;(local-set-key (kbd "C-.") 'complete-tag)
 	    (if rails-indent-and-complete
 		(local-set-key (if rails-use-another-define-key
 				   (kbd "TAB") (kbd "<tab>"))
@@ -519,7 +518,11 @@ necessary."
             (local-set-key (kbd "C-:") 'ruby-toggle-string<>simbol)
             (local-set-key (if rails-use-another-define-key
                                (kbd "RET") (kbd "<return>"))
-                           'ruby-newline-and-indent)))
+                           'ruby-newline-and-indent))
+
+            (when (fboundp 'inf-ruby-mode)
+              (local-set-key (kbd "C-c C-s") 'rails-script:console)
+              (local-set-key (kbd "C-c C-z") 'rails-script:console)))
 
 (add-hook 'speedbar-mode-hook
           (lambda()

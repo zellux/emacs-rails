@@ -330,10 +330,12 @@ BUFFER-MAJOR-MODE and process-sentinel SENTINEL."
          (name (format "console at (%s)" environment))
 	 (buffer (get-buffer (format "*rails-%s-%s*" (rails-project:name) name))))
     (if buffer
-	(switch-to-buffer-other-window buffer)
-	(rails-script:run-interactive name
-				      "script/console"
-				      environment))))
+      (progn
+        (when (fboundp 'inf-ruby-mode) (setq inf-ruby-buffer buffer))
+        (switch-to-buffer-other-window buffer))
+      (rails-script:run-interactive name
+                                    "script/console"
+                                    environment))))
 
 (defun rails-script:breakpointer ()
   "Run script/breakpointer."
