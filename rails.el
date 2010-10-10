@@ -506,9 +506,6 @@ necessary."
               (ruby-electric-mode (or rails-enable-ruby-electric -1))
               (ruby-hs-minor-mode t)
               (imenu-add-to-menubar "IMENU")
-              (modify-syntax-entry ?! "w" (syntax-table))
-              (modify-syntax-entry ?: "w" (syntax-table))
-              (modify-syntax-entry ?_ "w" (syntax-table))
               (if rails-indent-and-complete
 		(local-set-key (if rails-use-another-define-key
                                  (kbd "TAB") (kbd "<tab>"))
@@ -523,7 +520,7 @@ necessary."
             
               (when (fboundp 'inf-ruby-mode)
                 (local-set-key (kbd "C-c C-s") 'rails-script:console)
-                (local-set-key (kbd "C-c C-z") 'rails-script:console))))
+                (local-set-key (kbd "C-c C-z") 'rails-script:console)))))
 
 (add-hook 'speedbar-mode-hook
           (lambda()
