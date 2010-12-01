@@ -171,7 +171,8 @@ returned by `perform-replace' per FILE."
                                            dirs))
                                 (rails-refactoring:source-files))
                  (rails-refactoring:source-files)))
-        (case-fold-search (and case-fold-search (string= from (downcase from)))))
+        (case-fold-search (and case-fold-search (string= from (downcase from))))
+        (original-buffer (current-buffer)))
     (while (and keep-going files)
       (let* ((file (car files))
              (flymake-start-syntax-check-on-find-file nil)
@@ -187,7 +188,8 @@ returned by `perform-replace' per FILE."
               (if sites
                 (push (cons file sites) result)
                 (setq keep-going nil))))
-          (unless existing-buffer (kill-buffer nil))))
+          (unless existing-buffer (kill-buffer nil)))
+        (set-buffer original-buffer))
       (setq files (cdr files)))
     (and keep-going result)))
 
