@@ -169,7 +169,6 @@ Emacs w3m browser."
   :type 'integer)
 
 (defvar rails-version "0.5.99.6")
-(defvar rails-templates-list '("html.erb" "erb" "js.rjs" "builder" "rhtml" "rxml" "rjs" "haml" "liquid" "mab" "rtex" "prawn"))
 (defvar rails-use-another-define-key nil)
 (defvar rails-primary-switch-func nil)
 (defvar rails-secondary-switch-func nil)
@@ -227,6 +226,12 @@ Emacs w3m browser."
 
 (defcustom rails-grep-extensions '("builder" "erb" "haml" "liquid" "mab" "rake" "rb" "rhtml" "rjs" "rxml" "yml" "feature" "js" "html" "rtex" "prawn")
   "List of file extensions which grep searches."
+  :group 'rails
+  :type '(repeat string))
+
+(defcustom rails-templates-list
+  '("html.erb" "erb" "js.rjs" "rjs" "xml.builder" "builder" "rhtml" "rxml" "html.haml" "haml" "html.liquid" "liquid" "html.mad" "mab" "pdf.rtex" "rtex" "pdf.prawn" "prawn")
+  "List of view templates.  This first template is the default template."
   :group 'rails
   :type '(repeat string))
 
