@@ -297,17 +297,17 @@ Emacs w3m browser."
                (file-exists-p rails-chm-file))
           (start-process "keyhh" "*keyhh*" "keyhh.exe" "-#klink"
                          (format "'%s'" item)  rails-chm-file)
-        (let ((buf (buffer-name)))
-          (unless (string= buf "*ri*")
-            (switch-to-buffer-other-window "*ri*"))
-          (setq buffer-read-only nil)
-          (erase-buffer)
-          (message (concat "Please wait..."))
-          (call-process rails-ri-command nil "*ri*" t "-T" "-f" "ansi" item)
-;          (local-set-key [return] 'rails-search-doc) ; because this kicks in in text files. why? -mike
-          (ansi-color-apply-on-region (point-min) (point-max))
-          (setq buffer-read-only t)
-          (goto-char (point-min))))))
+          (with-current-buffer (get-buffer-create "*ri*")            
+            (setq buffer-read-only nil)
+            (erase-buffer)
+            (message (concat "Please wait..."))
+            (call-process rails-ri-command nil "*ri*" t "-T" "-f" "ansi" item)
+            (ansi-color-apply-on-region (point-min) (point-max))
+            (setq buffer-read-only t)
+            (goto-char (point-min))
+            (local-set-key "q" 'quit-window)
+            (local-set-key [f1] 'rails-search-doc)
+            (display-buffer (current-buffer))))))
 
 (defun rails-create-tags()
   "Create tags file"
