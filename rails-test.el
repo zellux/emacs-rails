@@ -127,7 +127,7 @@
        '(rails-test-error
          rails-test-trace))
   (add-hook 'after-change-functions 'rails-test:print-progress nil t)
-  (add-hook 'rails-script:run-after-stop-hook 'rails-test:run-after-hooks t t)
+  (add-hook 'rails-script:after-hook-internal 'rails-test:run-after-hooks t t)
   (add-hook 'rails-script:show-buffer-hook 'rails-test:reset-point-and-height t t))
 
 (defcustom rails-test:run-after-hook '(rails-test:hide-rails-project-root

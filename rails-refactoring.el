@@ -349,19 +349,19 @@ the rest."
 
 (defvar rails-refactoring:after-rails-script-jobs nil
   "Queue of jobs to be ran via
-`rails-script:run-after-stop-hook'.  Jobs are ran by
+`rails-script:after-hook-internal'.  Jobs are ran by
 `rails-refactoring:run-after-rails-script-jobs' and dequeued when
 they return non nil.")
 
 (defun rails-refactoring:run-after-rails-script-jobs ()
-  "Run pending `rails-script:run-after-stop-hook' refactoring
+  "Run pending `rails-script:after-hook-internal' refactoring
 jobs"
   (setq rails-refactoring:after-rails-script-jobs
         (delete-if (lambda (spec)
                      (funcall (car spec) (cadr spec) (cddr spec)))
                    rails-refactoring:after-rails-script-jobs)))
 
-(add-hook 'rails-script:run-after-stop-hook 'rails-refactoring:run-after-rails-script-jobs)
+(add-hook 'rails-script:after-hook-internal 'rails-refactoring:run-after-rails-script-jobs)
 
 (defmacro rails-refactoring:enqueue-migration-edit (migration function &rest arguments)
   "Enqueue migration edit to be run when
