@@ -95,8 +95,6 @@ For example -c to remove files from svn.")
     (when win
       (unless do-not-scroll-to-top
         (mapcar #'(lambda(w) (set-window-point w 0)) win))
-      (shrink-window-if-larger-than-buffer
-       (get-buffer-window rails-script:buffer-name))
       (run-hooks 'rails-script:show-buffer-hook))))
 
 (defun rails-script:push-first-button ()
@@ -118,8 +116,6 @@ For example -c to remove files from svn.")
         (progn
           (pop-to-buffer rails-script:buffer-name t t)
           (pop-to-buffer current t t)
-          (shrink-window-if-larger-than-buffer
-           (get-buffer-window rails-script:buffer-name))
           (run-hooks 'rails-script:show-buffer-hook)))
       (message "No output window found. Try running a script or a rake task before."))))
 
