@@ -342,6 +342,12 @@ Emacs w3m browser."
                       (list (grep-read-regexp))))
   (rgrep regexp (mapconcat (lambda (ext) (format "*.%s" ext)) rails-grep-extensions " ") (rails-project:root)))
 
+(defun rails-shell ()
+  "Switch to the project inferior shell buffer."
+  (interactive)
+  (let ((default-directory (rails-project:root)))
+    (shell (get-buffer-create (concat "*rails-" (rails-project:name) "-shell*")))))
+
 ;;;;;;;;;; Database integration ;;;;;;;;;;
 
 (defstruct rails-db-conf adapter host database username password)
