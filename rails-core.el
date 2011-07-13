@@ -690,6 +690,12 @@ If the action is nil, return all views for the controller."
             fns (cdr fns)))
     version))
 
+(defun rails-core:current-rails-major-version ()
+  "Return project major version of rails."
+  (let ((version (rails-core:current-rails-version)))
+    (when (string-match "^[0-9]+" version)
+      (string-to-number (match-string 0 version)))))
+
 ;;;;;;;;;; Determination of buffer type ;;;;;;;;;;
 
 (defun rails-core:buffer-file-match (regexp)

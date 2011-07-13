@@ -312,21 +312,24 @@ BUFFER-MAJOR-MODE and process-sentinel SENTINEL."
 
 ;;;;;;;;;; Shells ;;;;;;;;;;
 
-(defun rails-script:run-interactive (name script &optional params)
+(defun rails-script:run-interactive (name script &rest params)
   "Run an interactive shell with SCRIPT in a buffer named
 *rails-<project-name>-<name>*."
   (rails-project:with-root
    (root)
-   (let ((buffer-name (format "rails-%s-%s" (rails-project:name) name))
-         (script (rails-core:file script)))
-     (run-ruby-in-buffer buffer-name
-                         script
-                         params)
+   (let ((buffer-name (format "rails-%s-%s" (rails-project:name) name)))
+     (if (file-exists-p (rails-core:file "script/rails"))
+       (apply #'run-ruby-in-buffer buffer-name
+              (rails-core:file "script/rails")
+              (cons script params))
+       (apply #'run-ruby-in-buffer buffer-name
+              (rails-core:file (format "script/%s" script))
+              params))
      (setq ruby-buffer buffer-name))
    (rails-minor-mode t)))
 
 (defun rails-script:console (&optional environment)
-  "Run script/console. With prefix arg, prompts for environment."
+  "Run console. With prefix arg, prompts for environment."
   (interactive (list
                 (and current-prefix-arg
                      (read-buffer "Environment: " rails-default-environment))))
@@ -338,13 +341,13 @@ BUFFER-MAJOR-MODE and process-sentinel SENTINEL."
         (when (fboundp 'inf-ruby-mode) (setq inf-ruby-buffer buffer))
         (switch-to-buffer-other-window buffer))
       (rails-script:run-interactive name
-                                    "script/console"
+                                    "console"
                                     environment))))
 
 (defun rails-script:breakpointer ()
-  "Run script/breakpointer."
+  "Run breakpointer."
   (interactive)
-  (rails-script:run-interactive "breakpointer" "script/breakpointer"))
+  (rails-script:run-interactive "breakpointer" "breakpointer"))
 
 (provide 'rails-scripts)
 

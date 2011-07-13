@@ -174,26 +174,21 @@ See the variable `align-rules-list' for more details.")
 
 (require 'inf-ruby)
 
-(defun run-ruby-in-buffer (buf script &optional params)
+(defun run-ruby-in-buffer (buf script &rest params)
   "Run CMD as a ruby process in BUF if BUF does not exist."
+  (message "run-ruby-in-buffer %s" params)
   (let ((abuf (concat "*" buf "*")))
     (when (not (comint-check-proc abuf))
-      (set-buffer (make-comint buf rails-ruby-command nil script params)))
+      (set-buffer (apply #'make-comint buf rails-ruby-command nil script params)))
     (pop-to-buffer abuf)
-    (if (fboundp 'inf-ruby-mode)
-      (progn
-        (inf-ruby-mode)
+    (when (fboundp 'inf-ruby-mode)
+      (inf-ruby-mode)
+      (when (< (rails-core:current-rails-major-version) 3)
         (make-local-variable 'inf-ruby-first-prompt-pattern)
         (make-local-variable 'inf-ruby-prompt-pattern)
         (setq inf-ruby-first-prompt-pattern "^>> "
               inf-ruby-prompt-pattern "^>> "
-              inf-ruby-buffer (current-buffer)))
-      (progn
-        (inferior-ruby-mode)
-        (make-local-variable 'inferior-ruby-first-prompt-pattern)
-        (make-local-variable 'inferior-ruby-prompt-pattern)
-        (setq inferior-ruby-first-prompt-pattern "^>> "
-              inferior-ruby-prompt-pattern "^>> ")))))
+              inf-ruby-buffer (current-buffer))))))
 
 (defun complete-ruby-method (prefix &optional maxnum)
   (if (capital-word-p prefix)
