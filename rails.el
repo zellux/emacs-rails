@@ -505,6 +505,8 @@ necessary."
                "\\|" (mapconcat (lambda (ext) (concat "\\." ext "$")) rails-refactoring-source-extensions "\\|")
                "\\|" (mapconcat (lambda (ext) (concat "\\." ext "$")) rails-grep-extensions "\\|")
                "\\)"))
+  (set (make-local-variable 'ffip-patterns)
+       (mapcar (lambda (ext) (concat "*." ext)) rails-grep-extensions))
   (rails-features:install))
 
 ;; hooks
