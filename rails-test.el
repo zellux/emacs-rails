@@ -264,9 +264,14 @@ Used when it's determined that the output buffer needs to be shown."
         (method (rails-core:current-method-name))
         (description (or (rails-shoulda:current-test) (rails-test:active-support-test-case-current-test))))
     (cond (description
-           (rails-test:run-single-file file (format "--name=/%s/" (replace-regexp-in-string "[^a-z0-9,-]" "." description))))
+           (rails-test:run-single-file file
+                                       (format "--name=/%s/"
+                                               (replace-regexp-in-string "^\\.\\|\\.$" ""
+                                                                         (replace-regexp-in-string "[^a-z0-9,-]+" "."
+                                                                                                   description)))))
           (method
-           (rails-test:run-single-file file (format "--name=%s" method))))))
+           (rails-test:run-single-file file
+                                       (format "--name=%s" method))))))
 
 ;; These functions were originally defined anonymously in ui. They are defined here so keys
 ;; can be added to them dryly
