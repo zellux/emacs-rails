@@ -197,6 +197,7 @@ Emacs w3m browser."
     (:fixture          "test/fixtures/")
     (:lib              "lib")
     (:rspec-controller "spec/controllers")
+    (:rspec-controller "spec/requests")
     (:rspec-fixture    "spec/fixtures")
     (:rspec-lib        "spec/lib")
     (:rspec-model      "spec/models")

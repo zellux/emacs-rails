@@ -167,7 +167,7 @@ For example -c to remove files from svn.")
   "Run a Rails script COMMAND with PARAMETERS with
 BUFFER-MAJOR-MODE and process-sentinel SENTINEL."
   (unless (listp parameters)
-    (error "rails-script:run PARAMETERS must be the list"))
+    (error "rails-script:run PARAMETERS must be a list"))
   (rails-project:with-root
    (root)
    (save-some-buffers)
@@ -189,11 +189,12 @@ BUFFER-MAJOR-MODE and process-sentinel SENTINEL."
            (add-hook 'after-change-functions 'rails-cmd-proxy:convert-buffer-from-remote nil t))
          (set-process-coding-system proc 'utf-8-dos 'utf-8-dos)
          (set-process-sentinel proc 'rails-script:sentinel-proc)
+         (set-process-filter proc 'ansi-color-insertion-filter)
          (setq rails-script:running-script-name (concat command
                                                         " "
                                                         (strings-join " " parameters)))
 	 (setq rails-ui:mode-line-script-name (or mode-line-string
-				a		  command))
+                                                  command))
          (message "Starting %s." rails-script:running-script-name))))))
 
 ;;;;;;;;;; Destroy stuff ;;;;;;;;;;
