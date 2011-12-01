@@ -281,7 +281,8 @@ it."
     (buffer-string)))
 
 (defun buffer-visible-p (buffer-name)
-  (if (get-buffer-window buffer-name) t nil))
+  "Return t when BUFFER-NAME is visible in any frame."
+  (if (get-buffer-window buffer-name t) t nil))
 
 ;; Misc
 
