@@ -43,9 +43,9 @@
                     (list options files)
                     'rails-test:compilation-mode))
 
-(defun rails-spec:run-current ()
+(defun rails-spec:run-current (fail-fast)
   "Run spec for the current controller/model/mailer."
-  (interactive)
+  (interactive "P")
   (let* ((type (rails-core:buffer-type))
          (spec (cond
                 ((find type '(:model :mailer :rspec-fixture))
@@ -57,13 +57,15 @@
                 ((eql type :lib)
                  (rails-core:rspec-lib-file (rails-core:current-lib))))))
     (if spec
-      (rails-spec:run spec)
+      (let ((options (if fail-fast "--fail-fast" "")))
+        (rails-spec:run spec options))
       (message "No spec found for %s" (buffer-file-name)))))
 
-(defun rails-spec:run-all ()
+(defun rails-spec:run-all (fail-fast)
   "Run spec for all files in project (rails-spec:all-files variable)"
-  (interactive)
-  (rails-spec:run (rails-core:file rails-spec:all-files)))
+  (interactive "P")
+  (let ((options (if fail-fast "--fail-fast" "")))
+    (rails-spec:run (rails-core:file rails-spec:all-files) options)))
 
 (defun rails-spec:run-last ()
   "Rerun previous spec run."
