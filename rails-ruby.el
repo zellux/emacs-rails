@@ -130,8 +130,8 @@ See the variable `align-rules-list' for more details.")
     (flymake-mode t)
     (local-set-key (rails-key "d") 'flymake-display-err-menu-for-current-line)))
 
-(when (featurep 'flymake)
-  (add-hook 'ruby-mode-hook 'flymake-ruby-load))
+;; (when (featurep 'flymake)
+;;   (add-hook 'ruby-mode-hook 'flymake-ruby-load))
 
 ;; other stuff
 
