@@ -27,7 +27,7 @@
 
 ;; Customizations
 
-(defcustom rails-refactoring-source-extensions '("builder" "erb" "haml" "liquid" "mab" "rake" "rb" "rhtml" "rjs" "rxml" "yml" "rtex" "prawn")
+(defcustom rails-refactoring-source-extensions '("builder" "erb" "haml" "liquid" "mab" "rake" "rb" "rhtml" "rjs" "rxml" "yml" "rtex" "prawn" "slim")
   "List of file extensions for refactoring search and replace operations."
   :group 'rails
   :type '(repeat string))
