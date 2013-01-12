@@ -225,13 +225,13 @@ Emacs w3m browser."
   :group 'rails
   :type '(repeat string))
 
-(defcustom rails-grep-extensions '("builder" "erb" "haml" "liquid" "mab" "rake" "rb" "rhtml" "rjs" "rxml" "yml" "feature" "js" "html" "rtex" "prawn")
+(defcustom rails-grep-extensions '("builder" "erb" "haml" "liquid" "mab" "rake" "rb" "rhtml" "rjs" "rxml" "yml" "feature" "js" "html" "rtex" "prawn" "slim")
   "List of file extensions which grep searches."
   :group 'rails
   :type '(repeat string))
 
 (defcustom rails-templates-list
-  '("html.erb" "erb" "js.rjs" "rjs" "xml.builder" "builder" "rhtml" "rxml" "html.haml" "haml" "html.liquid" "liquid" "html.mad" "mab" "pdf.rtex" "rtex" "pdf.prawn" "prawn")
+  '("html.erb" "erb" "js.rjs" "rjs" "xml.builder" "builder" "rhtml" "rxml" "html.haml" "haml" "html.liquid" "liquid" "html.mad" "mab" "pdf.rtex" "rtex" "pdf.prawn" "prawn" "html.slim" "slim")
   "List of view templates.  This first template is the default template."
   :group 'rails
   :type '(repeat string))
